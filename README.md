@@ -1,10 +1,10 @@
-Projeto Zoro v3.1 ⚔️
+Projeto Zoro v3.2 ⚔️
 
 Aplicativo profissional de monitoramento de treinos de musculação, focado em alta densidade, progressão de carga e gamificação. Desenvolvido com tecnologias web modernas para uma experiência app-like fluida e responsiva.
 
 📋 Visão Geral
 
-O Projeto Zoro evoluiu para uma plataforma completa de gestão de performance física. Além do cronograma de treinos ABCDEF, a versão v3.1 introduz elementos de RPG (Gamificação), personalização visual (Temas) e métricas avançadas de volume de carga (Tonagem), mantendo a arquitetura leve e sem dependências de build complexas.
+O Projeto Zoro evoluiu para uma plataforma completa de gestão de performance física. Além do cronograma de treinos ABCDEF, a versão v3.2 refina a experiência do usuário com feedback tátil, ajustes de carga otimizados para hipertrofia e elementos de RPG, mantendo a arquitetura leve e sem dependências de build complexas.
 
 🚀 Tecnologias Utilizadas
 
@@ -18,7 +18,15 @@ Fontes: Inter (UI) & JetBrains Mono (Dados/Números).
 
 Persistência: localStorage com gestão de estado reativa.
 
-✨ Novas Funcionalidades (v3.1)
+✨ Novas Funcionalidades (v3.2)
+
+⚡ Ajustes de Treino & Feedback
+
+Faixa de Repetições (8-10): Protocolo atualizado para foco em hipertrofia e progressão de carga.
+
+Feedback Háptico: Vibração tátil ao concluir uma série (suporte a dispositivos móveis), permitindo uso sem olhar para a tela.
+
+Conclusão de Missão: Botão interativo que surge ao finalizar 100% das séries do dia, com feedback visual de vitória.
 
 🎮 Gamificação & Ranks
 
@@ -46,9 +54,7 @@ Tonagem (Volume Load): Cálculo automático do peso total levantado no treino (S
 
 Calendário de Consistência: Heatmap semanal para monitorar sua frequência (Meta: 6/7 dias).
 
-Conclusão de Missão: Feedback visual e sonoro ao finalizar 100% do treino diário.
-
-⚙️ Funcionalidades Core Melhoradas
+⚙️ Funcionalidades Core
 
 Timer Inteligente: Cronômetro de 45s automático com opção de Mute e adição rápida de tempo (+10s).
 
@@ -58,7 +64,7 @@ Backup de Dados: Exportação e Importação de progresso via arquivo JSON (segu
 
 📂 Estrutura do Projeto
 
-projeto-zoro-v3/
+projeto-zoro-v3.2/
 ├── index.html     # Estrutura, Modais e Layout App Shell
 ├── style.css      # Variáveis de Tema (:root), Animações e Glassmorphism
 ├── script.js      # Lógica de Estado (Store), Roteamento e Regras de Negócio
