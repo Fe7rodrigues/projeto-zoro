@@ -2,68 +2,56 @@
 <html lang="pt-BR">
 <head>
     <meta charset="UTF-8">
-    <!-- Viewport otimizado para não dar zoom e ajustar ao teclado -->
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
-    <title>Projeto Zoro v4.8</title>
+    <title>Projeto Zoro v5.0</title>
     
-    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚔️</text></svg>">
+    <!-- PWA Setup -->
+    <link rel="manifest" href="manifest.json">
+    <meta name="theme-color" content="#09090b">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+    <link rel="apple-touch-icon" href="https://placehold.co/192x192/000000/22c55e?text=Z"> 
     
+    <!-- Favicon -->
+    <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 512 512'%3E%3Crect width='512' height='512' rx='100' fill='%2309090b'/%3E%3Cpath d='M112 112h288L112 400h288' stroke='%2322c55e' stroke-width='64' fill='none' stroke-linecap='round' stroke-linejoin='round'/%3E%3C/svg%3E">
+
+    <!-- Libs -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="style.css">
+    
+    <!-- CSS (Caminho Atualizado) -->
+    <link rel="stylesheet" href="css/style.css">
 </head>
 <body class="selection:bg-green-900 selection:text-white">
 
-    <!-- Fundo Animado (Grid) -->
-    <div class="background-fx">
-        <div class="gym-grid"></div>
-    </div>
+    <div class="background-fx"><div class="gym-grid"></div></div>
 
-    <!-- Container Principal -->
     <div id="app-container">
-        
         <!-- Header -->
         <header id="main-header" class="glass-header px-4 py-4 flex items-center justify-between hidden">
-            <!-- JS injeta aqui -->
+            <!-- Injetado via JS -->
         </header>
 
-        <!-- Área de Conteúdo (Scrollável) -->
+        <!-- Main Content -->
         <main id="main-content">
-            <!-- JS renderiza Views aqui -->
+            <!-- Views -->
         </main>
 
-        <!-- Navbar Inferior -->
+        <!-- Navbar -->
         <nav id="bottom-nav" class="flex justify-around items-center">
-            <button onclick="router.navigate('home')" class="flex flex-col items-center gap-1 text-zinc-500 p-2 transition-all active:scale-95 group">
-                <i data-lucide="dumbbell" class="w-6 h-6 group-hover:stroke-[var(--theme-color)] transition-colors"></i>
-                <span class="text-[10px] font-bold group-hover:text-[var(--theme-color)]">TREINOS</span>
-            </button>
-            
-            <button onclick="router.navigate('stats')" class="flex flex-col items-center gap-1 text-zinc-500 p-2 transition-all active:scale-95 group">
-                <i data-lucide="bar-chart-2" class="w-6 h-6 group-hover:stroke-[var(--theme-color)] transition-colors"></i>
-                <span class="text-[10px] font-bold group-hover:text-[var(--theme-color)]">STATS</span>
-            </button>
-
-            <!-- Botão Central Flutuante -->
+            <button onclick="router.navigate('home')" class="nav-btn group"><i data-lucide="dumbbell" class="icon-nav"></i><span class="label-nav">TREINOS</span></button>
+            <button onclick="router.navigate('stats')" class="nav-btn group"><i data-lucide="bar-chart-2" class="icon-nav"></i><span class="label-nav">STATS</span></button>
             <div class="relative -top-6">
-                <button onclick="router.navigate('tools')" class="h-14 w-14 rounded-full flex items-center justify-center bg-zinc-900 border-2 border-[var(--theme-color)] shadow-[0_0_15px_var(--theme-glow)] transition-all active:scale-90 z-50">
+                <button onclick="router.navigate('tools')" class="h-14 w-14 rounded-full flex items-center justify-center bg-zinc-900 border-2 border-[var(--theme-color)] shadow-[0_0_15px_var(--theme-glow)] active:scale-90 transition-all">
                     <i data-lucide="swords" class="w-6 h-6 text-[var(--theme-color)]"></i>
                 </button>
             </div>
-
-            <button onclick="router.navigate('history')" class="flex flex-col items-center gap-1 text-zinc-500 p-2 transition-all active:scale-95 group">
-                <i data-lucide="calendar" class="w-6 h-6 group-hover:stroke-[var(--theme-color)] transition-colors"></i>
-                <span class="text-[10px] font-bold group-hover:text-[var(--theme-color)]">HIST</span>
-            </button>
-
-            <button onclick="settings.open()" class="flex flex-col items-center gap-1 text-zinc-500 p-2 transition-all active:scale-95 group">
-                <i data-lucide="settings" class="w-6 h-6 group-hover:stroke-[var(--theme-color)] transition-colors"></i>
-                <span class="text-[10px] font-bold group-hover:text-[var(--theme-color)]">AJUSTES</span>
-            </button>
+            <button onclick="router.navigate('achievements')" class="nav-btn group"><i data-lucide="medal" class="icon-nav"></i><span class="label-nav">BADGES</span></button>
+            <button onclick="settings.open()" class="nav-btn group"><i data-lucide="settings" class="icon-nav"></i><span class="label-nav">AJUSTES</span></button>
         </nav>
 
-        <!-- MODAL: Timer (Fixo na parte inferior acima da nav) -->
+        <!-- MODAL: Timer -->
         <div id="timer-modal" class="hidden fixed bottom-24 left-4 right-4 bg-[#111] border border-zinc-800 rounded-2xl shadow-2xl p-4 z-50 animate-slide-up">
             <div class="flex justify-between items-center mb-2">
                 <span class="text-[var(--theme-color)] text-xs font-bold uppercase tracking-wider flex items-center gap-2">
@@ -82,7 +70,7 @@
             </div>
         </div>
 
-        <!-- MODAL: Notas (Tela cheia com overlay) -->
+        <!-- MODAL: Notas -->
         <div id="notes-modal" class="hidden modal-overlay animate-fade-in">
             <div class="bg-[#111] w-full max-w-sm rounded-2xl border border-zinc-800 p-5 shadow-2xl">
                 <div class="flex justify-between items-center mb-4">
@@ -104,18 +92,10 @@
                 
                 <h4 class="text-xs font-bold text-zinc-500 uppercase mb-3">Tema</h4>
                 <div class="grid grid-cols-4 gap-2 mb-6">
-                    <button onclick="themeManager.setTheme('zoro')" class="h-10 bg-green-600 rounded-lg border-2 border-transparent focus:border-white relative overflow-hidden group">
-                        <span class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50 uppercase">Zoro</span>
-                    </button>
-                    <button onclick="themeManager.setTheme('luffy')" class="h-10 bg-red-600 rounded-lg border-2 border-transparent focus:border-white relative overflow-hidden group">
-                        <span class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50 uppercase">Luffy</span>
-                    </button>
-                    <button onclick="themeManager.setTheme('sanji')" class="h-10 bg-blue-600 rounded-lg border-2 border-transparent focus:border-white relative overflow-hidden group">
-                        <span class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50 uppercase">Sanji</span>
-                    </button>
-                    <button onclick="themeManager.setTheme('ace')" class="h-10 bg-orange-500 rounded-lg border-2 border-transparent focus:border-white relative overflow-hidden group">
-                        <span class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50 uppercase">Ace</span>
-                    </button>
+                    <button onclick="themeManager.setTheme('zoro')" class="h-10 bg-green-600 rounded-lg border-2 border-transparent focus:border-white relative overflow-hidden group"><span class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50 uppercase">Zoro</span></button>
+                    <button onclick="themeManager.setTheme('luffy')" class="h-10 bg-red-600 rounded-lg border-2 border-transparent focus:border-white relative overflow-hidden group"><span class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50 uppercase">Luffy</span></button>
+                    <button onclick="themeManager.setTheme('sanji')" class="h-10 bg-blue-600 rounded-lg border-2 border-transparent focus:border-white relative overflow-hidden group"><span class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50 uppercase">Sanji</span></button>
+                    <button onclick="themeManager.setTheme('ace')" class="h-10 bg-orange-500 rounded-lg border-2 border-transparent focus:border-white relative overflow-hidden group"><span class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50 uppercase">Ace</span></button>
                 </div>
 
                 <div class="space-y-3">
@@ -128,13 +108,25 @@
                             </label>
                         </div>
                     </div>
+                    
                     <button onclick="settings.clearAll()" class="w-full py-3 text-red-500 text-xs font-bold border border-red-900/30 rounded-xl hover:bg-red-900/10">RESETAR TUDO</button>
+
+                    <!-- Footer de Direitos Autorais -->
+                    <div class="mt-8 text-center pt-4 border-t border-zinc-800/50">
+                        <p class="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-1">
+                            Todos os direitos reservados a <span class="text-[var(--theme-color)]">Fernando Rodrigues</span>
+                        </p>
+                        <p class="text-zinc-600 text-[9px] font-mono">
+                            © 2025 • Projeto Zoro v5.0
+                        </p>
+                    </div>
                 </div>
             </div>
         </div>
 
     </div>
 
-    <script src="script.js"></script>
+    <!-- Script (Caminho Atualizado) -->
+    <script src="js/script.js"></script>
 </body>
 </html>

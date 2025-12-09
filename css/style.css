@@ -1,0 +1,230 @@
+/* --- Variáveis de Tema (Padrão inicial: Zoro/Verde) --- 
+   Estas variáveis são atualizadas via JavaScript pelo themeManager 
+*/
+:root {
+    --theme-color: #22c55e;      /* green-500 */
+    --theme-hover: #16a34a;      /* green-600 */
+    --theme-glow: rgba(34, 197, 94, 0.5);
+    --theme-bg-soft: rgba(34, 197, 94, 0.1);
+}
+
+/* --- Base --- */
+body {
+    font-family: 'Inter', sans-serif;
+    -webkit-tap-highlight-color: transparent; /* Remove highlight azul ao tocar no mobile */
+    overscroll-behavior-y: none; /* Previne efeito de "bounce" na rolagem da página inteira */
+    background-color: #000;
+}
+
+/* Scrollbar Personalizada (Fina e escura) */
+::-webkit-scrollbar { width: 4px; }
+::-webkit-scrollbar-track { background: #09090b; }
+::-webkit-scrollbar-thumb { background: #27272a; border-radius: 2px; }
+
+/* Fonte Mono para números e dados técnicos */
+.font-mono { font-family: 'JetBrains Mono', monospace; }
+
+/* --- Animações --- */
+@keyframes fadeIn { 
+    from { opacity: 0; } 
+    to { opacity: 1; } 
+}
+
+@keyframes slideUp { 
+    from { transform: translateY(100%); opacity: 0; } 
+    to { transform: translateY(0); opacity: 1; } 
+}
+
+@keyframes widthGrow { 
+    from { width: 0; } 
+    to { width: var(--target-width); } 
+}
+
+@keyframes heightGrow { 
+    from { height: 0; } 
+    to { height: var(--target-height); } 
+}
+
+@keyframes bounce-subtle { 
+    0%, 100% { transform: translateY(0); } 
+    50% { transform: translateY(-5px); } 
+}
+
+/* Efeito "Pop" ao desbloquear uma conquista */
+@keyframes unlock-pop {
+    0% { transform: scale(0.8); opacity: 0; }
+    50% { transform: scale(1.1); opacity: 1; }
+    100% { transform: scale(1); opacity: 1; }
+}
+
+.animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
+.animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-progress { animation: widthGrow 1s ease-out forwards; }
+.animate-bar-grow { animation: heightGrow 1s ease-out forwards; }
+.animate-bounce-subtle { animation: bounce-subtle 2s infinite; }
+.animate-unlock { animation: unlock-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards; }
+
+/* --- Componentes UI --- */
+
+/* Efeito de Vidro (Glassmorphism) para o Header */
+.glass-header {
+    background: rgba(9, 9, 11, 0.85);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px); /* Suporte Safari */
+    border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+/* Nav Buttons Helper Classes */
+.nav-btn {
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    gap: 4px;
+    padding: 8px; 
+    color: #71717a; /* zinc-500 */
+    transition: all 0.2s;
+}
+.nav-btn:active { transform: scale(0.95); }
+.nav-btn:hover { color: white; }
+
+.icon-nav { 
+    width: 24px; 
+    height: 24px; 
+    transition: stroke 0.2s; 
+}
+.group:hover .icon-nav { stroke: var(--theme-color); }
+
+.label-nav { 
+    font-size: 9px; 
+    font-weight: 700; 
+    transition: color 0.2s; 
+}
+.group:hover .label-nav { color: var(--theme-color); }
+
+/* Botão de Série com Tema Dinâmico */
+.btn-set {
+    transition: all 0.2s cubic-bezier(0.4, 0, 0.2, 1);
+    border: 1px solid #27272a;
+}
+.btn-set:active { transform: scale(0.95); }
+.btn-set.active {
+    background-color: var(--theme-color);
+    border-color: var(--theme-color);
+    color: #000;
+    font-weight: 800;
+    box-shadow: 0 0 15px -5px var(--theme-glow);
+}
+
+/* Inputs de Texto/Número (Estilo Dark) */
+.input-dark {
+    background: #18181b;
+    border: 1px solid #27272a;
+    color: white;
+    transition: border-color 0.2s;
+}
+.input-dark:focus {
+    outline: none;
+    border-color: var(--theme-color);
+}
+
+/* Utilitários de Texto e Borda baseados no Tema */
+.text-theme { color: var(--theme-color); }
+.bg-theme { background-color: var(--theme-color); }
+.border-theme { border-color: var(--theme-color); }
+.hover-text-theme:hover { color: var(--theme-color); }
+
+/* Indicador de Nota (Bolinha Azul) */
+.has-note-indicator {
+    position: absolute;
+    top: -2px;
+    right: -2px;
+    width: 8px;
+    height: 8px;
+    background-color: #3b82f6; /* Azul fixo */
+    border-radius: 50%;
+    border: 1px solid #18181b;
+}
+
+/* --- Gráfico de Barras CSS (Stats View) --- */
+.chart-container {
+    display: flex;
+    align-items: flex-end;
+    justify-content: space-between;
+    height: 150px;
+    gap: 4px;
+}
+.chart-bar-wrapper {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 4px;
+    height: 100%;
+    justify-content: flex-end;
+}
+.chart-bar {
+    width: 100%;
+    min-width: 8px;
+    border-radius: 4px 4px 0 0;
+    opacity: 0.9;
+    transition: opacity 0.2s;
+    background-color: var(--theme-color);
+    box-shadow: 0 0 15px -2px var(--theme-glow);
+}
+.chart-bar:hover { opacity: 1; filter: brightness(1.2); }
+
+/* --- Heatmap Grid (Consistência - Estilo GitHub) --- */
+.heatmap-grid {
+    display: grid;
+    grid-template-rows: repeat(7, 1fr); /* 7 dias da semana na vertical */
+    grid-auto-flow: column; /* Dias correm para a direita */
+    gap: 3px;
+    overflow-x: auto;
+    padding-bottom: 4px;
+}
+.heatmap-cell {
+    width: 10px; 
+    height: 10px; 
+    border-radius: 2px;
+    background-color: #27272a; /* Cor base (vazio) */
+}
+/* Níveis de Intensidade do Heatmap */
+.heatmap-l1 { background-color: rgba(34, 197, 94, 0.3) !important; }
+.heatmap-l2 { background-color: rgba(34, 197, 94, 0.6) !important; }
+.heatmap-l3 { background-color: rgba(34, 197, 94, 1.0) !important; box-shadow: 0 0 4px var(--theme-glow); }
+
+/* --- Badges (Conquistas) --- */
+.badge-card {
+    background: #18181b; 
+    border: 1px solid #27272a; 
+    border-radius: 12px;
+    padding: 12px; 
+    display: flex; 
+    flex-direction: column; 
+    align-items: center;
+    text-align: center; 
+    transition: all 0.3s; 
+    opacity: 0.5; 
+    filter: grayscale(1);
+}
+.badge-card.unlocked {
+    opacity: 1; 
+    filter: grayscale(0); 
+    border-color: var(--theme-color);
+    box-shadow: 0 0 10px -5px var(--theme-glow);
+    background: linear-gradient(to bottom right, #18181b, rgba(34, 197, 94, 0.05));
+}
+
+/* --- Delta Indicator (Comparação de Carga) --- */
+.delta-tag {
+    font-size: 9px; 
+    font-family: monospace; 
+    padding: 1px 4px; 
+    border-radius: 4px;
+    margin-left: 6px; 
+    font-weight: bold;
+    display: inline-block;
+}
+.delta-pos { color: #4ade80; background: rgba(74, 222, 128, 0.1); }
+.delta-neg { color: #f87171; background: rgba(248, 113, 113, 0.1); }
+.delta-neu { color: #9ca3af; background: rgba(156, 163, 175, 0.1); }

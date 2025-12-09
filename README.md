@@ -1,13 +1,13 @@
-# Projeto Zoro v4.8 ⚔️
+# Projeto Zoro v5.0 ⚔️
 
-Aplicativo profissional de monitoramento de treinos de musculação, focado em alta densidade, progressão de carga e execução técnica precisa. Desenvolvido com tecnologias web modernas para uma experiência app-like fluida, agora com uma interface futurista imersiva e otimizada para mobile.
+Aplicativo profissional de monitoramento de treinos de musculação, focado em alta densidade, progressão de carga e execução técnica precisa. Desenvolvido com tecnologias web modernas para uma experiência app-like fluida, agora com interface futurista imersiva e suporte completo a **PWA (Progressive Web App)**.
 
 ---
 
 ## 📋 Visão Geral
 
-O Projeto Zoro alcança um novo patamar de sofisticação na versão **4.8**. Projetado especialmente para a rede **Panobianco Academia**, o app mapeia os equipamentos exatos da marca **Kikos** e oferece tutoriais em vídeo integrados para cada movimento.  
-A interface segue a estética **Cyberpunk/Retrowave**, pensada para desempenho e motivação visual.
+O Projeto Zoro chega à versão **5.0** marcando um salto significativo de sofisticação. Criado especialmente para a rede **Panobianco Academia**, o app mapeia cada equipamento da marca **Kikos** utilizado na unidade e integra tutoriais em vídeo para execução perfeita dos movimentos.  
+A estética segue o estilo **Cyberpunk/Retrowave**, agora com capacidade de instalação como um aplicativo nativo.
 
 ---
 
@@ -18,17 +18,19 @@ A interface segue a estética **Cyberpunk/Retrowave**, pensada para desempenho e
 **Ícones:** Lucide Icons  
 **Mídia:** YouTube IFrame API (Embeds)  
 **Persistência:** localStorage com gestão de estado reativa  
+**PWA:** Service Workers & Web App Manifest  
 
 ---
 
-## ✨ Novas Funcionalidades (v4.8)
+## ✨ Novas Funcionalidades (v5.0)
 
-### 📱 Otimização Mobile (Mobile Fix)
+### 📱 Otimização Mobile & PWA
 
-**Experiência nativa no navegador:**
+**Experiência nativa dentro do navegador:**
 
-- **Viewport Dinâmico:** Ajuste automático para 100dvh e suporte a áreas seguras (Safe Area).  
-- **Performance:** Scroll nativo e inputs ajustados para evitar zoom automático.
+- **Instalável:** Pode ser adicionado à tela inicial e aberto sem barra de navegador.  
+- **Offline Capable:** Continua funcionando sem internet por meio do Service Worker.  
+- **Viewport Dinâmico:** Adaptação automática para 100dvh e áreas seguras (Safe Area).  
 
 ---
 
@@ -36,51 +38,57 @@ A interface segue a estética **Cyberpunk/Retrowave**, pensada para desempenho e
 
 **Aprenda a forma correta sem sair do app:**
 
-- **Vídeos Integrados:** Players do YouTube incorporados nos cards de exercícios.  
-- **Curadoria Panobianco:** Destaque para vídeos da série *Fast Fit* do canal oficial.
+- **Vídeos Integrados:** Players do YouTube dentro dos cards de exercício.  
+- **Curadoria Panobianco:** Foco na série *Fast Fit* do canal oficial.
 
 ---
 
 ### 🏋️ Mapeamento de Equipamentos KIKOS
 
-**Treine com precisão cirúrgica:**
+**Treinos com precisão absoluta:**
 
-- **Identificação de Máquinas:** Cada exercício exibe o modelo exato das máquinas Kikos disponíveis (ex.: *Kikos Plate Load PR70*, *Pro Station TTMS25*).
+- **Identificação de Máquinas:** Exibição do modelo exato utilizado na unidade  
+  (ex.: *Kikos Plate Load PR70*, *Pro Station TTMS25*).
 
 ---
 
 ### 🌌 Interface Futurista (Cyberpunk UI)
 
-**Uma experiência visual gamificada e energética:**
+**Visual gamificado e energético:**
 
-- **Fundo Animado:** Grid 3D contínuo no estilo *Retrowave*.  
-- **Efeitos Neon:** Botões e elementos com brilho intenso e sombras coloridas dinâmicas.  
-- **Responsividade:** Animações otimizadas via GPU, garantindo fluidez em 60fps.
+- **Fundo Animado:** Grid 3D em movimento inspirado no Retrowave, com ícones flutuantes.  
+- **Efeitos Neon:** Brilhos intensos e sombras coloridas dinâmicas.  
 
 ---
 
 ## 🔥 Funcionalidades de Suporte
 
-- **Lembrete Thermo Flame:** Cartão de aviso para suplementação pré-treino.  
+- **Lembrete Thermo Flame:** Cartão dedicado para lembrar a suplementação pré-treino.  
 - **Temas de Personagem:** Zoro (Verde), Luffy (Vermelho), Sanji (Azul) e Ace (Laranja).
 
 ---
 
 ## 📊 Ferramentas Analíticas & Utilitários
 
-- **Dashboard de Stats:** Gráfico de barras em CSS para monitoramento semanal.  
-- **Calculadora de Anilhas:** Algoritmo para montagem rápida de barras olímpicas.  
-- **Estimativa de 1RM:** Cálculo automático de carga máxima teórica.  
-- **Timer Háptico:** Cronômetro com vibração e controle sonoro.
+- **Dashboard de Stats:** Gráfico de barras em CSS e novo Heatmap de consistência semanal.  
+- **Calculadora de Anilhas:** Auxilia na montagem de barras olímpicas.  
+- **Estimativa de 1RM:** Cálculo automático da carga máxima teórica.  
+- **Timer Háptico:** Cronômetro com vibração e áudio.
 
 ---
 
 ## 📂 Estrutura do Projeto
 
-projeto-zoro-v4.8/
+A versão 5.0 traz uma arquitetura mais organizada e escalável:
+
+projeto-zoro-v5.0/
+├── css/
+│ └── style.css # Estilos Cyberpunk, Animações 3D e Variáveis
+├── js/
+│ └── script.js # Lógica de Negócio, YouTube Mapping e Store
 ├── index.html # App Shell, Modais, Views e Player de Vídeo
-├── style.css # Estilos Cyberpunk, Animações 3D e Variáveis
-├── script.js # Lógica de Negócio, YouTube Mapping e Store
+├── manifest.json # Configuração do PWA (Ícones, Nome, Cores)
+├── service-worker.js # Cache para funcionamento Offline
 └── README.md # Documentação Técnica
 
 
@@ -89,13 +97,14 @@ projeto-zoro-v4.8/
 ## 🛠️ Como Executar Localmente
 
 **Download:**  
-Baixe os arquivos *index.html*, *style.css* e *script.js* para a mesma pasta.
+Baixe todos os arquivos e organize conforme a estrutura acima.
 
 **Execução:**
 
-- **Simples:** Abra *index.html* diretamente no navegador.  
-- **Recomendado (Dev):** Utilize a extensão **Live Server** no VS Code para hot-reload.  
-- **Modo Mobile:** No navegador desktop, pressione **F12 > Ctrl+Shift+M** para simular toque.
+- **Simples:** Abra o arquivo *index.html* diretamente no navegador.  
+- **PWA (Recomendado):** Para testar instalação e modo offline, sirva via HTTPS ou `localhost`.  
+  Utilize a extensão **Live Server** no VS Code para facilitar.  
+- **Modo Mobile:** No desktop, pressione **F12 > Ctrl+Shift+M** para simular dispositivos móveis.
 
 ---
 
