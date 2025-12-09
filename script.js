@@ -1,7 +1,8 @@
 /**
- * PROJETO ZORO V3.1 - CORE LOGIC
+ * PROJETO ZORO V3.2 - CORE LOGIC
  * Autor: Fernando Rodrigues
  * Stack: Vanilla JS + Tailwind
+ * Atualização: Reps 8-10 & Feedback Hápitico
  */
 
 // --- CONFIGURAÇÃO DE TEMAS ---
@@ -21,37 +22,37 @@ const RANKS = [
     { name: "Rei do Inferno", minXP: 2000 }
 ];
 
-// --- DADOS DO TREINO (ABCDEF) ---
+// --- DADOS DO TREINO (ABCDEF) - Atualizado para 8-10 Reps ---
 const WORKOUT_PLAN = [
     {
         id: 'day-a', letter: 'A', title: 'Peitoral & Abdômen', focus: 'Empurrar',
         exercises: [
-            { id: 'a1', name: 'Supino Sentado Máquina', sets: 4, reps: '12-15', rest: 45 },
-            { id: 'a2', name: 'Peck Deck (Voador)', sets: 4, reps: '12-15', rest: 45 },
-            { id: 'a3', name: 'Supino Inclinado Máquina', sets: 4, reps: '12-15', rest: 45 },
-            { id: 'a4', name: 'Cross Over Polia', sets: 4, reps: '12-15', rest: 45 },
-            { id: 'a5', name: 'Abdominal Machine', sets: 4, reps: '15-20', rest: 45 },
+            { id: 'a1', name: 'Supino Sentado Máquina', sets: 4, reps: '8-10', rest: 45 },
+            { id: 'a2', name: 'Peck Deck (Voador)', sets: 4, reps: '8-10', rest: 45 },
+            { id: 'a3', name: 'Supino Inclinado Máquina', sets: 4, reps: '8-10', rest: 45 },
+            { id: 'a4', name: 'Cross Over Polia', sets: 4, reps: '8-10', rest: 45 },
+            { id: 'a5', name: 'Abdominal Machine', sets: 4, reps: '15-20', rest: 45 }, // Abdômen mantém reps mais altas
             { id: 'a6', name: 'Rotação de Tronco', sets: 4, reps: '15-20', rest: 45 },
         ]
     },
     {
         id: 'day-b', letter: 'B', title: 'Dorsais & Lombar', focus: 'Puxar',
         exercises: [
-            { id: 'b1', name: 'Puxada Alta Aberta', sets: 4, reps: '12-15', rest: 45 },
-            { id: 'b2', name: 'Puxada Triângulo', sets: 4, reps: '12-15', rest: 45 },
-            { id: 'b3', name: 'Remada Baixa Sentada', sets: 4, reps: '12-15', rest: 45 },
-            { id: 'b4', name: 'Remada Máquina', sets: 4, reps: '12-15', rest: 45 },
-            { id: 'b5', name: 'Pulldown Polia Alta', sets: 4, reps: '12-15', rest: 45 },
-            { id: 'b6', name: 'Extensão Lombar', sets: 4, reps: '15', rest: 60 },
+            { id: 'b1', name: 'Puxada Alta Aberta', sets: 4, reps: '8-10', rest: 45 },
+            { id: 'b2', name: 'Puxada Triângulo', sets: 4, reps: '8-10', rest: 45 },
+            { id: 'b3', name: 'Remada Baixa Sentada', sets: 4, reps: '8-10', rest: 45 },
+            { id: 'b4', name: 'Remada Máquina', sets: 4, reps: '8-10', rest: 45 },
+            { id: 'b5', name: 'Pulldown Polia Alta', sets: 4, reps: '8-10', rest: 45 },
+            { id: 'b6', name: 'Extensão Lombar', sets: 4, reps: '12-15', rest: 60 },
         ]
     },
     {
         id: 'day-c', letter: 'C', title: 'Quadríceps & Panturrilha', focus: 'Pernas Anterior',
         exercises: [
-            { id: 'c1', name: 'Leg Press 45º (Baixo)', sets: 4, reps: '12-15', rest: 60 },
-            { id: 'c2', name: 'Hack Machine', sets: 4, reps: '12-15', rest: 60 },
-            { id: 'c3', name: 'Cadeira Extensora', sets: 4, reps: '12-15', rest: 45 },
-            { id: 'c4', name: 'Leg Press Horizontal', sets: 4, reps: '12-15', rest: 45 },
+            { id: 'c1', name: 'Leg Press 45º (Baixo)', sets: 4, reps: '8-10', rest: 60 },
+            { id: 'c2', name: 'Hack Machine', sets: 4, reps: '8-10', rest: 60 },
+            { id: 'c3', name: 'Cadeira Extensora', sets: 4, reps: '8-10', rest: 45 },
+            { id: 'c4', name: 'Leg Press Horizontal', sets: 4, reps: '8-10', rest: 45 },
             { id: 'c5', name: 'Panturrilha Sentado', sets: 4, reps: '15-20', rest: 30 },
             { id: 'c6', name: 'Panturrilha Leg Press', sets: 4, reps: '15-20', rest: 30 },
         ]
@@ -59,39 +60,39 @@ const WORKOUT_PLAN = [
     {
         id: 'day-d', letter: 'D', title: 'Ombros & Trapézio', focus: 'Deltóides',
         exercises: [
-            { id: 'd1', name: 'Desenvolvimento Máq.', sets: 4, reps: '12-15', rest: 45 },
-            { id: 'd2', name: 'Elevação Lateral Máq.', sets: 4, reps: '12-15', rest: 45 },
-            { id: 'd3', name: 'Elevação Frontal Polia', sets: 4, reps: '12-15', rest: 45 },
-            { id: 'd4', name: 'Peck Deck Inverso', sets: 4, reps: '12-15', rest: 45 },
-            { id: 'd5', name: 'Remada Alta Polia', sets: 4, reps: '12-15', rest: 45 },
-            { id: 'd6', name: 'Encolhimento Máq.', sets: 4, reps: '15', rest: 45 },
+            { id: 'd1', name: 'Desenvolvimento Máq.', sets: 4, reps: '8-10', rest: 45 },
+            { id: 'd2', name: 'Elevação Lateral Máq.', sets: 4, reps: '8-10', rest: 45 },
+            { id: 'd3', name: 'Elevação Frontal Polia', sets: 4, reps: '8-10', rest: 45 },
+            { id: 'd4', name: 'Peck Deck Inverso', sets: 4, reps: '8-10', rest: 45 },
+            { id: 'd5', name: 'Remada Alta Polia', sets: 4, reps: '8-10', rest: 45 },
+            { id: 'd6', name: 'Encolhimento Máq.', sets: 4, reps: '12-15', rest: 45 },
         ]
     },
     {
         id: 'day-e', letter: 'E', title: 'Bíceps & Tríceps', focus: 'Braços',
         exercises: [
-            { id: 'e1', name: 'Tríceps Pulley Barra', sets: 4, reps: '12-15', rest: 45 },
-            { id: 'e2', name: 'Tríceps Corda', sets: 4, reps: '12-15', rest: 45 },
-            { id: 'e3', name: 'Tríceps Máquina', sets: 4, reps: '12-15', rest: 45 },
-            { id: 'e4', name: 'Rosca Scott Máquina', sets: 4, reps: '12-15', rest: 45 },
-            { id: 'e5', name: 'Rosca Direta Polia', sets: 4, reps: '12-15', rest: 45 },
-            { id: 'e6', name: 'Rosca Martelo Polia', sets: 4, reps: '12-15', rest: 45 },
+            { id: 'e1', name: 'Tríceps Pulley Barra', sets: 4, reps: '8-10', rest: 45 },
+            { id: 'e2', name: 'Tríceps Corda', sets: 4, reps: '8-10', rest: 45 },
+            { id: 'e3', name: 'Tríceps Máquina', sets: 4, reps: '8-10', rest: 45 },
+            { id: 'e4', name: 'Rosca Scott Máquina', sets: 4, reps: '8-10', rest: 45 },
+            { id: 'e5', name: 'Rosca Direta Polia', sets: 4, reps: '8-10', rest: 45 },
+            { id: 'e6', name: 'Rosca Martelo Polia', sets: 4, reps: '8-10', rest: 45 },
         ]
     },
     {
         id: 'day-f', letter: 'F', title: 'Posterior & Glúteos', focus: 'Cadeia Posterior',
         exercises: [
-            { id: 'f1', name: 'Mesa Flexora', sets: 4, reps: '12-15', rest: 45 },
-            { id: 'f2', name: 'Cadeira Flexora', sets: 4, reps: '12-15', rest: 45 },
-            { id: 'f3', name: 'Cadeira Abdutora', sets: 4, reps: '15', rest: 45 },
-            { id: 'f4', name: 'Glúteo Máquina', sets: 4, reps: '12-15', rest: 45 },
-            { id: 'f5', name: 'Leg Press 45º (Alto)', sets: 4, reps: '12-15', rest: 60 },
-            { id: 'f6', name: 'Cadeira Adutora', sets: 4, reps: '15', rest: 45 },
+            { id: 'f1', name: 'Mesa Flexora', sets: 4, reps: '8-10', rest: 45 },
+            { id: 'f2', name: 'Cadeira Flexora', sets: 4, reps: '8-10', rest: 45 },
+            { id: 'f3', name: 'Cadeira Abdutora', sets: 4, reps: '12-15', rest: 45 },
+            { id: 'f4', name: 'Glúteo Máquina', sets: 4, reps: '8-10', rest: 45 },
+            { id: 'f5', name: 'Leg Press 45º (Alto)', sets: 4, reps: '8-10', rest: 60 },
+            { id: 'f6', name: 'Cadeira Adutora', sets: 4, reps: '12-15', rest: 45 },
         ]
     }
 ];
 
-// --- STORE ---
+// --- STORE (Gerenciamento de Estado) ---
 const store = {
     data: {
         completedSets: {},
@@ -103,7 +104,7 @@ const store = {
             theme: 'zoro',
             soundEnabled: true
         },
-        xp: 0 // Total Sets Completed
+        xp: 0 
     },
 
     load() {
@@ -111,20 +112,20 @@ const store = {
         if (saved) {
             const parsed = JSON.parse(saved);
             this.data = { ...this.data, ...parsed };
-            // Merge settings if new ones added
+            // Garante que configurações existam para usuários antigos
             if(!this.data.settings) this.data.settings = { theme: 'zoro', soundEnabled: true };
         }
         themeManager.apply(this.data.settings.theme);
     },
 
     save() {
-        // Recalculate XP on save just to be sure
+        // Recalcular XP baseado nos sets completados para consistência de dados
         this.data.xp = Object.values(this.data.completedSets).filter(Boolean).length;
         localStorage.setItem('zoro_v3_data', JSON.stringify(this.data));
     }
 };
 
-// --- THEME MANAGER ---
+// --- THEME MANAGER (Gerenciador de Temas) ---
 const themeManager = {
     apply(themeKey) {
         const theme = THEMES[themeKey] || THEMES['zoro'];
@@ -138,21 +139,18 @@ const themeManager = {
         store.data.settings.theme = key;
         this.apply(key);
         store.save();
-        // Força re-render se estiver na home
-        if (!document.getElementById('main-header').classList.contains('hidden')) {
-             // Do nothing
-        } else {
+        // Se não estiver na home, não precisamos re-renderizar a home imediatamente
+        if (document.getElementById('main-header').classList.contains('hidden')) {
              router.renderHome(document.getElementById('main-content'));
         }
     }
 };
 
-// --- UTILS ---
+// --- UTILS (Funções Utilitárias) ---
 const utils = {
     getTodayDate: () => new Date().toISOString().split('T')[0],
     
     getRank(xp) {
-        // Find highest rank where minXP <= xp
         return [...RANKS].reverse().find(r => xp >= r.minXP) || RANKS[0];
     },
 
@@ -176,7 +174,7 @@ const utils = {
     }
 };
 
-// --- MODULES ---
+// --- MODULES (Componentes Lógicos) ---
 
 const timer = {
     interval: null,
@@ -236,6 +234,7 @@ const timer = {
                 this.render();
             } else {
                 this.beep();
+                // Vibração ao fim do timer
                 if(navigator.vibrate) navigator.vibrate([200, 100, 200]);
                 this.timeLeft = 0;
                 this.pause();
@@ -364,7 +363,6 @@ const router = {
         const currentRank = utils.getRank(store.data.xp);
         const nextRank = utils.getNextRank(store.data.xp);
         
-        // Cálculo de barra de progresso do Rank
         let progressPct = 100;
         let xpText = `${store.data.xp} XP (Máximo)`;
         
@@ -376,7 +374,6 @@ const router = {
             xpText = `${store.data.xp} / ${nextRank.minXP} XP`;
         }
 
-        // Render Streak
         const streakHtml = weekDays.map(d => {
             const done = store.data.workoutHistory[d.iso];
             const isToday = d.iso === utils.getTodayDate();
@@ -466,21 +463,21 @@ const router = {
         let totalLoad = 0;
         workout.exercises.forEach(ex => {
             const weight = parseFloat(store.data.weights[ex.id]) || 0;
+            // Estima repetições médias como 10 se não houver lógica complexa
             for(let i=0; i<4; i++) {
                 if(store.data.completedSets[`${ex.id}-${i}`]) {
-                    totalLoad += weight * 12; // Estimativa conservadora de 12 reps
+                    totalLoad += weight * 10; 
                 }
             }
         });
 
-        // Verifica se TODOS os exercícios foram completados
+        // Verifica conclusão
         const totalSets = workout.exercises.length * 4;
         let completedSets = 0;
         workout.exercises.forEach(ex => {
              for(let i=0; i<4; i++) if(store.data.completedSets[`${ex.id}-${i}`]) completedSets++;
         });
         const isWorkoutComplete = totalSets > 0 && totalSets === completedSets;
-
 
         // Header
         document.getElementById('main-header').innerHTML = `
@@ -516,9 +513,18 @@ const router = {
                                     </button>
                                 </div>
                             </div>
-                            <div class="bg-zinc-950 px-2 py-1 rounded-md border border-zinc-800 inline-flex items-center gap-1">
-                                <i data-lucide="timer" class="w-3 h-3 text-theme"></i>
-                                <span class="text-xs font-mono font-bold text-zinc-300">${ex.rest}s</span>
+                            <!-- ÁREA DE DADOS TÉCNICOS -->
+                            <div class="flex gap-2 justify-end">
+                                <!-- Badge Repetições -->
+                                <div class="bg-zinc-950 px-2 py-1 rounded-md border border-zinc-800 inline-flex items-center gap-1">
+                                    <i data-lucide="repeat" class="w-3 h-3 text-theme"></i>
+                                    <span class="text-xs font-mono font-bold text-zinc-300">${ex.reps}</span>
+                                </div>
+                                <!-- Badge Descanso -->
+                                <div class="bg-zinc-950 px-2 py-1 rounded-md border border-zinc-800 inline-flex items-center gap-1">
+                                    <i data-lucide="timer" class="w-3 h-3 text-theme"></i>
+                                    <span class="text-xs font-mono font-bold text-zinc-300">${ex.rest}s</span>
+                                </div>
                             </div>
                         </div>
                         <div class="grid grid-cols-4 gap-2">
@@ -569,8 +575,10 @@ const actions = {
         const wasDone = store.data.completedSets[k];
         store.data.completedSets[k] = !wasDone;
         
-        // XP Logic
         if(!wasDone) {
+            // Feedback Hápitico (Vibração curta)
+            if(navigator.vibrate) navigator.vibrate(50);
+
             store.data.xp = (store.data.xp || 0) + 1;
             timer.start(rest);
             store.data.workoutHistory[utils.getTodayDate()] = router.currentParams.id;
@@ -584,7 +592,6 @@ const actions = {
     weight(ex, val) {
         store.data.weights[ex] = val;
         store.save();
-        // Re-render para atualizar tonagem
         router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
     cardio() {
