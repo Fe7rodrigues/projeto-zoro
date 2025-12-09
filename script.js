@@ -1,7 +1,7 @@
 /**
- * PROJETO ZORO V4.7 - CORE LOGIC
+ * PROJETO ZORO V4.8 - CORE LOGIC
  * Autor: Fernando Rodrigues
- * Inovações: Tutoriais de Execução Panobianco (Fast Fit) + Lembrete Thermo Flame
+ * Inovações: Tutoriais YouTube, Kikos Mapping, Mobile Optimization
  */
 
 // --- CONFIGURAÇÃO ---
@@ -18,21 +18,20 @@ const RANKS = [
     { name: "Yonkou", minXP: 1000 }, { name: "Rei do Inferno", minXP: 2000 }
 ];
 
-// --- DADOS DO TREINO (ABCDEF) - VÍDEOS PANOBIANCO ---
-// Prioridade: Canal Oficial Panobianco (Série Fast Fit)
+// --- DADOS DO TREINO (ABCDEF) - VÍDEOS PANOBIANCO/KIKOS ---
 const WORKOUT_PLAN = [
     { id: 'day-a', letter: 'A', title: 'Peitoral & Abdômen', focus: 'Empurrar', exercises: [
         { id: 'a1', name: 'Supino Máquina', machine: 'Kikos Pro Concept II', sets: 4, reps: '8-10', rest: 45, youtube: 'UfYsjtao108' }, // Fast Fit - Supino Máquina
-        { id: 'a2', name: 'Peck Deck', machine: 'Kikos Pro Station TTMS25', sets: 4, reps: '8-10', rest: 45, youtube: 'a5XwjsD3AOI' }, // Genérico PT-BR (Panobianco não listado)
+        { id: 'a2', name: 'Peck Deck', machine: 'Kikos Pro Station TTMS25', sets: 4, reps: '8-10', rest: 45, youtube: 'a5XwjsD3AOI' }, // Genérico PT-BR
         { id: 'a3', name: 'Supino Inclinado', machine: 'Kikos Pro Titanium TTS12', sets: 4, reps: '8-10', rest: 45, youtube: '_OodPWexj_g' }, // Genérico Máquina
         { id: 'a4', name: 'Cross Over', machine: 'Kikos Pro Titanium TTMS20', sets: 4, reps: '8-10', rest: 45, youtube: '7UC_8lsE2w0' }, // Genérico Polia
         { id: 'a5', name: 'Abd. Machine', machine: 'Kikos Pro Station TTFW60', sets: 4, reps: '15-20', rest: 45, youtube: 'qWtYjH0enBA' }, // Genérico Máquina
         { id: 'a6', name: 'Rotação Tronco', machine: 'Kikos Torso Rotation', sets: 4, reps: '15-20', rest: 45, youtube: 'tDBYMZxwXQ8' }  // Genérico
     ]},
     { id: 'day-b', letter: 'B', title: 'Dorsais & Lombar', focus: 'Puxar', exercises: [
-        { id: 'b1', name: 'Puxada Alta', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'UO70dS2tTyQ' }, // Fast Fit - Puxada Triângulo (Adaptável)
-        { id: 'b2', name: 'Puxada Triângulo', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'UO70dS2tTyQ' }, // Fast Fit - Puxada Triângulo
-        { id: 'b3', name: 'Remada Baixa', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'MwyrOd_vwB8' }, // Fast Fit - Remada Baixa Supinada
+        { id: 'b1', name: 'Puxada Alta', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'UO70dS2tTyQ' }, // Fast Fit - Puxada
+        { id: 'b2', name: 'Puxada Triângulo', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'UO70dS2tTyQ' }, // Fast Fit - Puxada
+        { id: 'b3', name: 'Remada Baixa', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'MwyrOd_vwB8' }, // Fast Fit - Remada Baixa
         { id: 'b4', name: 'Remada Máquina', machine: 'Kikos Pro Plate Load', sets: 4, reps: '8-10', rest: 45, youtube: 'TeFo51Q_Nsc' }, // Genérico Máquina
         { id: 'b5', name: 'Pulldown', machine: 'Kikos Crossover Polia', sets: 4, reps: '8-10', rest: 45, youtube: 'Jgei5V3dE48' }, // Genérico
         { id: 'b6', name: 'Extensão Lombar', machine: 'Kikos Banco Lombar', sets: 4, reps: '12-15', rest: 60, youtube: 'ph3pddpKzzw' } // Genérico
@@ -40,7 +39,7 @@ const WORKOUT_PLAN = [
     { id: 'day-c', letter: 'C', title: 'Quadríceps & Pant.', focus: 'Pernas Ant.', exercises: [
         { id: 'c1', name: 'Leg Press 45º', machine: 'Kikos Plate Load PR70', sets: 4, reps: '8-10', rest: 60, youtube: 'uJu3Yph10cI' }, // Fast Fit - Leg Press 45
         { id: 'c2', name: 'Hack Machine', machine: 'Kikos Pro Station TTPL79', sets: 4, reps: '8-10', rest: 60, youtube: 'O8gOJu9ph2E' }, // Fast Fit - Agachamento Hack
-        { id: 'c3', name: 'Cad. Extensora', machine: 'Kikos Plate Load PR71', sets: 4, reps: '8-10', rest: 45, youtube: '46WfkM7rRF4' }, // Genérico PT-BR (Alta qualidade)
+        { id: 'c3', name: 'Cad. Extensora', machine: 'Kikos Plate Load PR71', sets: 4, reps: '8-10', rest: 45, youtube: '46WfkM7rRF4' }, // Genérico PT-BR
         { id: 'c4', name: 'Leg Horizontal', machine: 'Kikos Pro Titanium TTS70', sets: 4, reps: '8-10', rest: 45, youtube: 'gTo0HfVcLxo' }, // Fast Fit - Leg Horizontal
         { id: 'c5', name: 'Pant. Sentado', machine: 'Kikos Pro Station TTPL77', sets: 4, reps: '15-20', rest: 30, youtube: 'JbyjNymZOt0' }, // Genérico
         { id: 'c6', name: 'Pant. Leg Press', machine: 'Kikos Plate Load PR70', sets: 4, reps: '15-20', rest: 30, youtube: 'uJu3Yph10cI' } // Mesmo vídeo do Leg 45
@@ -54,18 +53,18 @@ const WORKOUT_PLAN = [
         { id: 'd6', name: 'Encolhimento', machine: 'Kikos Smith Machine', sets: 4, reps: '12-15', rest: 45, youtube: '8j2Gj_6I5xI' }  // Genérico Smith
     ]},
     { id: 'day-e', letter: 'E', title: 'Bíceps & Tríceps', focus: 'Braços', exercises: [
-        { id: 'e1', name: 'Tríceps Pulley', machine: 'Kikos Crossover', sets: 4, reps: '8-10', rest: 45, youtube: 'ga8dtLyTj1M' }, // Fast Fit - Tríceps Unilateral (Adaptável)
+        { id: 'e1', name: 'Tríceps Pulley', machine: 'Kikos Crossover', sets: 4, reps: '8-10', rest: 45, youtube: 'ga8dtLyTj1M' }, // Fast Fit - Tríceps
         { id: 'e2', name: 'Tríceps Corda', machine: 'Kikos Crossover', sets: 4, reps: '8-10', rest: 45, youtube: 'vB5OHsJ3ECE' }, // Genérico Corda
         { id: 'e3', name: 'Tríceps Máq.', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: '3_9d1g7o_cM' }, // Genérico Máquina
         { id: 'e4', name: 'Rosca Scott', machine: 'Kikos Pro Scott', sets: 4, reps: '8-10', rest: 45, youtube: '2jDrDoW1Z0o' }, // Genérico Máquina
-        { id: 'e5', name: 'Rosca Direta', machine: 'Kikos Crossover Baixo', sets: 4, reps: '8-10', rest: 45, youtube: 'vhcJP86SEos' }, // Fast Fit - Bíceps Unilateral Polia
+        { id: 'e5', name: 'Rosca Direta', machine: 'Kikos Crossover Baixo', sets: 4, reps: '8-10', rest: 45, youtube: 'vhcJP86SEos' }, // Fast Fit - Bíceps
         { id: 'e6', name: 'Rosca Martelo', machine: 'Kikos Crossover Corda', sets: 4, reps: '8-10', rest: 45, youtube: 'zC3nLlEpt4w' } // Genérico Corda
     ]},
     { id: 'day-f', letter: 'F', title: 'Posterior & Glúteos', focus: 'Cadeia Post.', exercises: [
         { id: 'f1', name: 'Mesa Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: '2piLtfoXX6k' }, // Genérico Mesa
         { id: 'f2', name: 'Cad. Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 45, youtube: 'Y1o8iPiBI7k' }, // Fast Fit - Cadeira Flexora
         { id: 'f3', name: 'Cad. Abdutora', machine: 'Kikos Pro Station', sets: 4, reps: '12-15', rest: 45, youtube: 'Hs-9c39_rjo' }, // Fast Fit - Cadeira Abdutora
-        { id: 'f4', name: 'Glúteo Máq.', machine: 'Kikos Glute Machine', sets: 4, reps: '8-10', rest: 45, youtube: 'Z8gztZ1_t9A' }, // Fast Fit - Glúteos 4 Apoios Máquina
+        { id: 'f4', name: 'Glúteo Máq.', machine: 'Kikos Glute Machine', sets: 4, reps: '8-10', rest: 45, youtube: 'Z8gztZ1_t9A' }, // Fast Fit - Glúteos
         { id: 'f5', name: 'Leg 45º Alto', machine: 'Kikos Plate Load PR70', sets: 4, reps: '8-10', rest: 60, youtube: 'uJu3Yph10cI' }, // Fast Fit - Leg Press 45
         { id: 'f6', name: 'Cad. Adutora', machine: 'Kikos Pro Station', sets: 4, reps: '12-15', rest: 45, youtube: 'p3g4wAsu0R4' } // Genérico Adutora
     ]}
@@ -77,13 +76,13 @@ const store = {
         completedSets: {}, weights: {}, notes: {}, cardioHistory: {}, workoutHistory: {}, 
         settings: { theme: 'zoro', soundEnabled: true }, 
         xp: 0,
-        visibleVideos: {} // Renomeado para clareza
+        visibleVideos: {} // Renomeado para clareza: controla visibilidade dos vídeos
     },
     load() {
         const saved = localStorage.getItem('zoro_v4_data');
         if (saved) { 
             const parsed = JSON.parse(saved);
-            this.data = { ...this.data, ...parsed, visibleVideos: {} }; 
+            this.data = { ...this.data, ...parsed, visibleVideos: {} }; // Reseta estado de vídeo
             if(!this.data.settings) this.data.settings = { theme: 'zoro', soundEnabled: true }; 
         }
         themeManager.apply(this.data.settings.theme);
@@ -259,7 +258,7 @@ const router = {
                 </div>
                 <div class="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-4 mb-6 backdrop-blur-sm"><div class="flex justify-between mb-3"><h3 class="text-xs font-bold text-zinc-400 uppercase">Consistência</h3></div><div class="flex justify-between">${days}</div></div>
                 
-                <!-- Thermo Flame Reminder (New) -->
+                <!-- Thermo Flame Reminder (Fixo) -->
                 <div class="bg-gradient-to-r from-red-900/20 to-orange-900/20 border border-red-500/30 p-4 rounded-2xl flex items-center gap-4 mb-6 backdrop-blur-sm">
                     <div class="bg-red-500/20 p-2 rounded-lg">
                         <i data-lucide="flame" class="w-6 h-6 text-red-500"></i>
