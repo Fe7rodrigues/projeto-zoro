@@ -1,42 +1,52 @@
-Projeto Zoro v3.2 ⚔️
+Projeto Zoro v4.0 ⚔️
 
-Aplicativo profissional de monitoramento de treinos de musculação, focado em alta densidade, progressão de carga e gamificação. Desenvolvido com tecnologias web modernas para uma experiência app-like fluida e responsiva.
+Aplicativo profissional de monitoramento de treinos de musculação, focado em alta densidade, progressão de carga e inteligência de dados. Desenvolvido com tecnologias web modernas para uma experiência app-like fluida e responsiva.
 
 📋 Visão Geral
 
-O Projeto Zoro evoluiu para uma plataforma completa de gestão de performance física. Além do cronograma de treinos ABCDEF, a versão v3.2 refina a experiência do usuário com feedback tátil, ajustes de carga otimizados para hipertrofia e elementos de RPG, mantendo a arquitetura leve e sem dependências de build complexas.
+O Projeto Zoro evoluiu para uma plataforma completa de gestão de performance física. Além do cronograma de treinos ABCDEF, a versão v4.0 introduz ferramentas analíticas avançadas e utilitários matemáticos para o atleta sério, mantendo a arquitetura leve e sem dependências.
 
 🚀 Tecnologias Utilizadas
 
 Core: HTML5 Semântico, JavaScript (ES6+ Modular), CSS3.
 
-Estilização: Tailwind CSS (via CDN) + CSS Custom Properties para temas dinâmicos.
+Estilização: Tailwind CSS (via CDN) + CSS Custom Properties.
 
-Ícones: Lucide Icons (Leves e vetoriais).
+Ícones: Lucide Icons.
 
 Fontes: Inter (UI) & JetBrains Mono (Dados/Números).
 
 Persistência: localStorage com gestão de estado reativa.
 
-✨ Novas Funcionalidades (v3.2)
+✨ Novas Funcionalidades (v4.0)
 
-⚡ Ajustes de Treino & Feedback
+📊 Dashboard Analítico (Stats)
 
-Faixa de Repetições (8-10): Protocolo atualizado para foco em hipertrofia e progressão de carga.
+Visualização gráfica de dados sem bibliotecas externas:
 
-Feedback Háptico: Vibração tátil ao concluir uma série (suporte a dispositivos móveis), permitindo uso sem olhar para a tela.
+Gráfico de Volume Semanal: Monitoramento visual da "Tonagem" (Kg totais levantados) dia a dia, permitindo ajustes precisos na intensidade.
 
-Conclusão de Missão: Botão interativo que surge ao finalizar 100% das séries do dia, com feedback visual de vitória.
+Métricas de Frequência: Contadores de treinos totais e séries realizadas.
 
-🎮 Gamificação & Ranks
+🧮 Ferramentas Técnicas (Tools)
 
-Transforme o treino em uma jornada de RPG. Ganhe XP a cada série concluída e suba de nível:
+Utilitários matemáticos para otimização do treino:
 
-Ranks: Aprendiz ➔ Caçador de Piratas ➔ Supernova ➔ Shichibukai ➔ Yonkou ➔ Rei do Inferno.
+Calculadora de Anilhas (Plate Math): Algoritmo que determina a combinação exata de anilhas para atingir uma carga alvo na barra olímpica (base 20kg).
 
-Barra de Progresso: Visualização em tempo real do XP necessário para o próximo nível.
+Estimativa de 1RM: Cálculo automático da Repetição Máxima (1RM) teórica usando a fórmula de Epley, essencial para periodização de força.
 
-🎨 Sistema de Temas (Personagens)
+🎮 Gamificação Avançada
+
+Transforme o treino em uma jornada de RPG:
+
+Sistema de XP: Ganhe experiência a cada série concluída.
+
+Ranks: Evolua de Aprendiz ➔ Caçador ➔ Supernova ➔ Shichibukai ➔ Yonkou ➔ Rei do Inferno.
+
+Barra de Progresso: Visualização em tempo real do progresso para o próximo nível.
+
+🎨 Sistema de Temas
 
 Personalize a interface com base nos seus personagens favoritos:
 
@@ -48,26 +58,22 @@ Sanji: Azul Profundo.
 
 Ace: Laranja Fogo.
 
-📊 Métricas Avançadas
-
-Tonagem (Volume Load): Cálculo automático do peso total levantado no treino (Séries × Repetições Estimadas × Carga).
-
-Calendário de Consistência: Heatmap semanal para monitorar sua frequência (Meta: 6/7 dias).
-
 ⚙️ Funcionalidades Core
 
-Timer Inteligente: Cronômetro de 45s automático com opção de Mute e adição rápida de tempo (+10s).
+Timer Inteligente: Cronômetro de 45s automático com opção de Mute, feedback háptico (vibração) e adição rápida de tempo.
 
-Notas Técnicas: Campo de texto persistente por exercício para registrar ajustes de máquina (banco, pino, pegada).
+Notas Técnicas: Campo de texto persistente por exercício para registrar ajustes de máquina.
 
-Backup de Dados: Exportação e Importação de progresso via arquivo JSON (segurança contra limpeza de cache).
+Backup de Dados: Exportação e Importação de progresso via arquivo JSON.
+
+Consistência: Heatmap semanal na tela inicial.
 
 📂 Estrutura do Projeto
 
-projeto-zoro-v3.2/
-├── index.html     # Estrutura, Modais e Layout App Shell
-├── style.css      # Variáveis de Tema (:root), Animações e Glassmorphism
-├── script.js      # Lógica de Estado (Store), Roteamento e Regras de Negócio
+projeto-zoro-v4.0/
+├── index.html     # App Shell, Modais, Views (Home, Detail, Stats, Tools)
+├── style.css      # Estilos, Animações, Gráficos CSS e Variáveis de Tema
+├── script.js      # Lógica de Negócio, Math Utils, Store e Roteamento
 └── README.md      # Documentação Técnica
 
 

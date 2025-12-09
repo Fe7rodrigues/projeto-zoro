@@ -3,9 +3,12 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Projeto Zoro v3.2</title>
+    <title>Projeto Zoro v4.0</title>
     
-    <!-- Tailwind CSS (CDN para prototipagem rápida) -->
+    <!-- Favicon Personalizado -->
+    <link rel="icon" href="data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 viewBox=%220 0 100 100%22><text y=%22.9em%22 font-size=%2290%22>⚔️</text></svg>">
+
+    <!-- Tailwind CSS (CDN) -->
     <script src="https://cdn.tailwindcss.com"></script>
     
     <!-- Lucide Icons -->
@@ -28,25 +31,35 @@
 
         <!-- Conteúdo Principal -->
         <main id="main-content" class="flex-1 overflow-y-auto pb-24 pt-4 scroll-smooth">
-            <!-- Views renderizadas aqui -->
+            <!-- Views (Home, Detail, Stats, Tools) são renderizadas aqui -->
         </main>
 
-        <!-- Navbar Fixa -->
-        <nav id="bottom-nav" class="fixed bottom-0 w-full max-w-md bg-zinc-900/95 backdrop-blur border-t border-zinc-800 px-6 py-3 flex justify-around items-center z-40">
-            <button onclick="router.navigate('home')" class="flex flex-col items-center gap-1 text-zinc-400 hover:text-white transition-transform active:scale-95 group">
-                <i data-lucide="dumbbell" class="w-6 h-6 group-hover:stroke-[var(--theme-color)] transition-colors"></i>
-                <span class="text-[10px] font-bold group-hover:text-[var(--theme-color)] transition-colors">TREINOS</span>
+        <!-- Navbar Fixa (5 Itens) -->
+        <nav id="bottom-nav" class="fixed bottom-0 w-full max-w-md bg-zinc-900/95 backdrop-blur border-t border-zinc-800 px-2 py-3 flex justify-around items-center z-40">
+            <button onclick="router.navigate('home')" class="nav-btn flex flex-col items-center gap-1 text-zinc-400 p-2 rounded-xl transition-all active:scale-95 group hover:text-white">
+                <i data-lucide="dumbbell" class="w-5 h-5 group-hover:stroke-[var(--theme-color)] transition-colors"></i>
+                <span class="text-[9px] font-bold group-hover:text-[var(--theme-color)] transition-colors">TREINOS</span>
             </button>
             
-            <div class="relative -top-6">
-                <div class="h-14 w-14 rounded-full flex items-center justify-center border-4 border-zinc-950 z-50 bg-theme shadow-[0_0_15px_var(--theme-glow)] transition-all">
-                    <i data-lucide="swords" class="w-7 h-7 text-black"></i>
-                </div>
+            <button onclick="router.navigate('stats')" class="nav-btn flex flex-col items-center gap-1 text-zinc-400 p-2 rounded-xl transition-all active:scale-95 group hover:text-white">
+                <i data-lucide="bar-chart-2" class="w-5 h-5 group-hover:stroke-[var(--theme-color)] transition-colors"></i>
+                <span class="text-[9px] font-bold group-hover:text-[var(--theme-color)] transition-colors">STATS</span>
+            </button>
+
+            <div class="relative -top-5">
+                <button onclick="router.navigate('tools')" class="h-14 w-14 rounded-full flex items-center justify-center border-4 border-zinc-950 z-50 bg-theme shadow-[0_0_15px_var(--theme-glow)] transition-all active:scale-90 hover:brightness-110">
+                    <i data-lucide="swords" class="w-6 h-6 text-black"></i>
+                </button>
             </div>
 
-            <button onclick="settings.open()" class="flex flex-col items-center gap-1 text-zinc-500 hover:text-white transition-colors active:scale-95 group">
-                <i data-lucide="settings" class="w-6 h-6 group-hover:stroke-[var(--theme-color)] transition-colors"></i>
-                <span class="text-[10px] font-bold group-hover:text-[var(--theme-color)] transition-colors">AJUSTES</span>
+            <button onclick="router.navigate('history')" class="nav-btn flex flex-col items-center gap-1 text-zinc-400 p-2 rounded-xl transition-all active:scale-95 group hover:text-white">
+                <i data-lucide="calendar" class="w-5 h-5 group-hover:stroke-[var(--theme-color)] transition-colors"></i>
+                <span class="text-[9px] font-bold group-hover:text-[var(--theme-color)] transition-colors">HIST</span>
+            </button>
+
+            <button onclick="settings.open()" class="nav-btn flex flex-col items-center gap-1 text-zinc-400 p-2 rounded-xl transition-all active:scale-95 group hover:text-white">
+                <i data-lucide="settings" class="w-5 h-5 group-hover:stroke-[var(--theme-color)] transition-colors"></i>
+                <span class="text-[9px] font-bold group-hover:text-[var(--theme-color)] transition-colors">AJUSTES</span>
             </button>
         </nav>
 
@@ -112,18 +125,18 @@
                 <div class="space-y-6">
                     <!-- Seletor de Tema -->
                     <div>
-                        <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3">Estilo de Combate (Tema)</h4>
+                        <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-wider mb-3">Estilo de Combate</h4>
                         <div class="grid grid-cols-4 gap-2">
-                            <button onclick="themeManager.setTheme('zoro')" class="h-12 rounded-xl bg-green-600 border-2 border-transparent hover:scale-105 transition-all focus:border-white relative overflow-hidden">
+                            <button onclick="themeManager.setTheme('zoro')" class="h-12 rounded-xl bg-green-600 border-2 border-transparent hover:scale-105 transition-all relative overflow-hidden group">
                                 <span class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50">ZORO</span>
                             </button>
-                            <button onclick="themeManager.setTheme('luffy')" class="h-12 rounded-xl bg-red-600 border-2 border-transparent hover:scale-105 transition-all focus:border-white relative overflow-hidden">
+                            <button onclick="themeManager.setTheme('luffy')" class="h-12 rounded-xl bg-red-600 border-2 border-transparent hover:scale-105 transition-all relative overflow-hidden">
                                 <span class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50">LUFFY</span>
                             </button>
-                            <button onclick="themeManager.setTheme('sanji')" class="h-12 rounded-xl bg-blue-600 border-2 border-transparent hover:scale-105 transition-all focus:border-white relative overflow-hidden">
+                            <button onclick="themeManager.setTheme('sanji')" class="h-12 rounded-xl bg-blue-600 border-2 border-transparent hover:scale-105 transition-all relative overflow-hidden">
                                 <span class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50">SANJI</span>
                             </button>
-                            <button onclick="themeManager.setTheme('ace')" class="h-12 rounded-xl bg-orange-500 border-2 border-transparent hover:scale-105 transition-all focus:border-white relative overflow-hidden">
+                            <button onclick="themeManager.setTheme('ace')" class="h-12 rounded-xl bg-orange-500 border-2 border-transparent hover:scale-105 transition-all relative overflow-hidden">
                                 <span class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50">ACE</span>
                             </button>
                         </div>
@@ -152,14 +165,14 @@
                 </div>
                 
                 <div class="mt-8 text-center pt-4 border-t border-zinc-800/50">
-                    <p class="text-zinc-700 text-[10px]">Projeto Zoro v3.2 • Fernando Rodrigues</p>
+                    <p class="text-zinc-700 text-[10px]">Projeto Zoro v4.0 • Fernando Rodrigues</p>
                 </div>
             </div>
         </div>
 
     </div>
 
-    <!-- Script Externo -->
+    <!-- Lógica JavaScript -->
     <script src="script.js"></script>
 </body>
 </html>
