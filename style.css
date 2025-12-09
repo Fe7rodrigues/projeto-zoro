@@ -58,7 +58,7 @@ body {
 
 /* --- Componentes --- */
 
-/* Efeito de Vidro (Glassmorphism) para o Header */
+/* Efeito de Vidro (Glassmorphism) para o Header e Nav */
 .glass-header {
     background: rgba(9, 9, 11, 0.85);
     backdrop-filter: blur(12px);

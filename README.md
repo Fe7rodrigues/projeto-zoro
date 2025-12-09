@@ -1,10 +1,10 @@
-Projeto Zoro v4.0 ⚔️
+Projeto Zoro v4.1 ⚔️
 
 Aplicativo profissional de monitoramento de treinos de musculação, focado em alta densidade, progressão de carga e inteligência de dados. Desenvolvido com tecnologias web modernas para uma experiência app-like fluida e responsiva.
 
 📋 Visão Geral
 
-O Projeto Zoro evoluiu para uma plataforma completa de gestão de performance física. Além do cronograma de treinos ABCDEF, a versão v4.0 introduz ferramentas analíticas avançadas e utilitários matemáticos para o atleta sério, mantendo a arquitetura leve e sem dependências.
+O Projeto Zoro evoluiu para uma plataforma completa de gestão de performance física. Além do cronograma de treinos ABCDEF, a versão v4.1 consolida ferramentas analíticas avançadas e introduz funcionalidades de entretenimento para manter o foco durante o treino.
 
 🚀 Tecnologias Utilizadas
 
@@ -18,13 +18,21 @@ Fontes: Inter (UI) & JetBrains Mono (Dados/Números).
 
 Persistência: localStorage com gestão de estado reativa.
 
-✨ Novas Funcionalidades (v4.0)
+✨ Novas Funcionalidades (v4.1)
+
+🎵 Player de Música Integrado (Music)
+
+Mantenha o foco sem sair do app:
+
+Spotify Embed: Player embutido para controle de playlists diretamente na interface.
+
+Persistência: Salve o link da sua playlist favorita (Gym Phonk, Metal, etc.) e o app lembrará dela na próxima sessão.
 
 📊 Dashboard Analítico (Stats)
 
 Visualização gráfica de dados sem bibliotecas externas:
 
-Gráfico de Volume Semanal: Monitoramento visual da "Tonagem" (Kg totais levantados) dia a dia, permitindo ajustes precisos na intensidade.
+Gráfico de Volume Semanal: Monitoramento visual da "Tonagem" (Kg totais levantados) dia a dia.
 
 Métricas de Frequência: Contadores de treinos totais e séries realizadas.
 
@@ -32,9 +40,9 @@ Métricas de Frequência: Contadores de treinos totais e séries realizadas.
 
 Utilitários matemáticos para otimização do treino:
 
-Calculadora de Anilhas (Plate Math): Algoritmo que determina a combinação exata de anilhas para atingir uma carga alvo na barra olímpica (base 20kg).
+Calculadora de Anilhas (Plate Math): Algoritmo que determina a combinação exata de anilhas para atingir uma carga alvo na barra olímpica.
 
-Estimativa de 1RM: Cálculo automático da Repetição Máxima (1RM) teórica usando a fórmula de Epley, essencial para periodização de força.
+Estimativa de 1RM: Cálculo automático da Repetição Máxima (1RM) teórica usando a fórmula de Epley.
 
 🎮 Gamificação Avançada
 
@@ -70,8 +78,8 @@ Consistência: Heatmap semanal na tela inicial.
 
 📂 Estrutura do Projeto
 
-projeto-zoro-v4.0/
-├── index.html     # App Shell, Modais, Views (Home, Detail, Stats, Tools)
+projeto-zoro-v4.1/
+├── index.html     # App Shell, Modais, Views (Home, Detail, Stats, Tools, Music)
 ├── style.css      # Estilos, Animações, Gráficos CSS e Variáveis de Tema
 ├── script.js      # Lógica de Negócio, Math Utils, Store e Roteamento
 └── README.md      # Documentação Técnica
