@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content"
     />
-    <title>Projeto Zoro v5.0</title>
+    <title>Projeto Zoro v5.5</title>
 
     <!-- PWA Setup -->
     <link rel="manifest" href="manifest.json" />
@@ -35,6 +35,31 @@
     <link rel="stylesheet" href="css/style.css" />
   </head>
   <body class="selection:bg-green-900 selection:text-white">
+    
+    <!-- SPLASH SCREEN -->
+    <div id="splash-screen" class="fixed inset-0 bg-black z-[100] flex flex-col items-center justify-center transition-opacity duration-700">
+        <!-- Background Glow -->
+        <div class="absolute inset-0 flex items-center justify-center">
+            <div class="w-48 h-48 bg-[var(--theme-color)] rounded-full opacity-20 blur-[60px] animate-pulse"></div>
+        </div>
+        
+        <!-- Logo Animation -->
+        <div class="relative z-10 flex flex-col items-center">
+            <!-- ALTERADO: Usando loading.png como solicitado -->
+            <img src="assets/img/loading.png" class="w-24 h-24 animate-spin-glow mb-6" alt="Carregando..." />
+            
+            <!-- Loading Text -->
+            <div class="flex flex-col items-center gap-2">
+                <p class="text-[var(--theme-color)] text-[10px] font-mono tracking-[0.3em] animate-pulse font-bold">
+                    INICIALIZANDO SISTEMA
+                </p>
+                <div class="w-24 h-0.5 bg-zinc-800 rounded-full overflow-hidden">
+                    <div class="h-full bg-[var(--theme-color)] animate-progress-indeterminate"></div>
+                </div>
+            </div>
+        </div>
+    </div>
+
     <div class="background-fx"><div class="gym-grid"></div></div>
 
     <div id="app-container">

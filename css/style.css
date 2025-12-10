@@ -148,8 +148,6 @@ body {
     opacity: 1;
   }
 }
-
-/* Animação POP ajustada */
 @keyframes pop-check {
   0% {
     transform: scale(1);
@@ -160,6 +158,27 @@ body {
   100% {
     transform: scale(1);
   }
+}
+
+/* --- SPLASH SCREEN ANIMATIONS --- */
+@keyframes spin-glow {
+  0% {
+    transform: rotate(0deg) scale(0.95);
+    filter: drop-shadow(0 0 5px var(--theme-color));
+  }
+  50% {
+    transform: rotate(180deg) scale(1.1);
+    filter: drop-shadow(0 0 25px var(--theme-color));
+  }
+  100% {
+    transform: rotate(360deg) scale(0.95);
+    filter: drop-shadow(0 0 5px var(--theme-color));
+  }
+}
+
+@keyframes progress-indet {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(100%); }
 }
 
 .animate-fade-in {
@@ -179,6 +198,18 @@ body {
 }
 .animate-unlock {
   animation: unlock-pop 0.6s cubic-bezier(0.34, 1.56, 0.64, 1) forwards;
+}
+.animate-spin-glow {
+  animation: spin-glow 3s cubic-bezier(0.4, 0, 0.2, 1) infinite;
+}
+.animate-progress-indeterminate {
+  animation: progress-indet 1.5s infinite linear;
+}
+
+/* Classe utilitária para esconder o splash suavemente */
+.splash-hidden {
+    opacity: 0;
+    pointer-events: none;
 }
 
 .background-fx {

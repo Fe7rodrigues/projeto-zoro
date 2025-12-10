@@ -1,7 +1,7 @@
 /**
- * PROJETO ZORO V5.0 - ULTIMATE EDITION (FIXED)
+ * PROJETO ZORO V5.5 - ULTIMATE EDITION (SPLASH + FIXES)
  * Autor: Fernando Rodrigues
- * Fix: Tratamento de erro para LocalStorage corrompido e falha de bibliotecas
+ * Update: Adicionada Splash Screen animada e proteções de dados
  */
 
 // --- CONFIGURAÇÃO ---
@@ -127,7 +127,6 @@ const store = {
                 
             } catch (e) {
                 console.error("Erro no load (Resetando):", e);
-                // Em caso de corrupção total, mantemos o default
             }
         }
         themeManager.apply(this.data.settings.theme || 'zoro');
@@ -612,15 +611,22 @@ const actions = {
     finish() { alert('Treino Concluído! +100XP'); router.navigate('home'); }
 };
 
-// --- SPLASH SCREEN & INIT ---
+// --- SPLASH SCREEN LOGIC ---
 function initApp() {
     const splash = document.getElementById('splash-screen');
-    if (splash) {
-        setTimeout(() => {
-            splash.style.opacity = '0';
-            setTimeout(() => { splash.style.display = 'none'; }, 500);
-        }, 2000);
-    }
+    
+    // Tempo total de exibição: 2500ms (2.5 segundos)
+    setTimeout(() => {
+        if (splash) {
+            // Adiciona a classe que faz o fade-out (transparência)
+            splash.classList.add('splash-hidden');
+            
+            // Espera a transição do CSS (700ms) terminar para remover o elemento da tela
+            setTimeout(() => {
+                splash.style.display = 'none';
+            }, 700);
+        }
+    }, 2500);
 }
 
 if ('serviceWorker' in navigator) {
@@ -630,7 +636,7 @@ if ('serviceWorker' in navigator) {
 }
 
 document.addEventListener('DOMContentLoaded', () => { 
-    initApp(); 
+    initApp(); // Chama Splash Screen
     store.load(); 
     router.navigate('home'); 
 });
