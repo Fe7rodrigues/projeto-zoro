@@ -1,11 +1,11 @@
 {
-    "name": "Projeto Zoro",
-    "short_name": "Zoro",
-    "description": "App de treino de hipertrofia com gamificação.",
+    "name": "Pro Gym App",
+    "short_name": "Pro Gym",
+    "description": "Sistema profissional de gestão de treinos e performance.",
     "start_url": "./index.html",
     "display": "standalone",
     "background_color": "#09090b",
-    "theme_color": "#22c55e",
+    "theme_color": "#3b82f6",
     "icons": [
         {
             "src": "assets/img/icon.png",

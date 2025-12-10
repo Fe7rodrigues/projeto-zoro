@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content"
     />
-    <title>Projeto Zoro v5.5</title>
+    <title>Pro Gym App v1.0</title>
 
     <!-- PWA Setup -->
     <link rel="manifest" href="manifest.json" />
@@ -17,56 +17,55 @@
       content="black-translucent"
     />
 
-    <!-- Ícone para iOS (Tela Inicial) -->
+    <!-- Ícone para iOS -->
     <link rel="apple-touch-icon" href="assets/img/icon.png" />
 
-    <!-- Favicon (Aba do Navegador) -->
+    <!-- Favicon -->
     <link rel="icon" type="image/png" href="assets/img/logo.png" />
 
     <!-- Libs -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700&family=JetBrains+Mono:wght@400;700&display=swap"
-      rel="stylesheet"
-    />
+    
+    <!-- Fonts: Inter (UI) & JetBrains Mono (Dados) -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
     <!-- CSS -->
     <link rel="stylesheet" href="css/style.css" />
   </head>
-  <body class="selection:bg-green-900 selection:text-white">
+  <body class="selection:bg-blue-900 selection:text-white">
     
     <!-- SPLASH SCREEN -->
-    <div id="splash-screen" class="fixed inset-0 bg-black z-[100] flex flex-col items-center justify-center transition-opacity duration-700">
-        <!-- Background Glow -->
-        <div class="absolute inset-0 flex items-center justify-center">
-            <div class="w-48 h-48 bg-[var(--theme-color)] rounded-full opacity-20 blur-[60px] animate-pulse"></div>
-        </div>
-        
+    <div id="splash-screen" class="fixed inset-0 bg-[#09090b] z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
         <!-- Logo Animation -->
         <div class="relative z-10 flex flex-col items-center">
-            <!-- ALTERADO: Usando loading.png como solicitado -->
-            <img src="assets/img/loading.png" class="w-24 h-24 animate-spin-glow mb-6" alt="Carregando..." />
+            <div class="relative mb-8">
+                <div class="absolute inset-0 bg-[var(--theme-color)] blur-2xl opacity-20 rounded-full"></div>
+                <img src="/assets/img/loading.png" class="w-20 h-20 animate-spin-slow relative z-10 opacity-90" alt="Carregando..." />
+            </div>
             
             <!-- Loading Text -->
-            <div class="flex flex-col items-center gap-2">
-                <p class="text-[var(--theme-color)] text-[10px] font-mono tracking-[0.3em] animate-pulse font-bold">
-                    INICIALIZANDO SISTEMA
+            <div class="flex flex-col items-center gap-3">
+                <p class="text-zinc-400 text-[10px] font-mono tracking-[0.3em] font-bold uppercase">
+                    Carregando Sistema
                 </p>
-                <div class="w-24 h-0.5 bg-zinc-800 rounded-full overflow-hidden">
+                <div class="w-32 h-1 bg-zinc-800 rounded-full overflow-hidden">
                     <div class="h-full bg-[var(--theme-color)] animate-progress-indeterminate"></div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div class="background-fx"><div class="gym-grid"></div></div>
+    <!-- Background: Clean Tech -->
+    <div class="background-fx"></div>
 
     <div id="app-container">
       <!-- Header -->
       <header
         id="main-header"
-        class="glass-header px-4 py-4 flex items-center justify-between hidden"
+        class="glass-header px-5 py-4 flex items-center justify-between hidden"
       >
         <!-- Injetado via JS -->
       </header>
@@ -79,59 +78,57 @@
       <!-- Navbar -->
       <nav id="bottom-nav" class="flex justify-around items-center">
         <button onclick="router.navigate('home')" class="nav-btn group">
-          <i data-lucide="dumbbell" class="icon-nav"></i
-          ><span class="label-nav">TREINOS</span>
+          <i data-lucide="layout-grid" class="icon-nav"></i
+          ><span class="label-nav">PAINEL</span>
         </button>
         <button onclick="router.navigate('stats')" class="nav-btn group">
-          <i data-lucide="bar-chart-2" class="icon-nav"></i
+          <i data-lucide="activity" class="icon-nav"></i
           ><span class="label-nav">STATS</span>
         </button>
         <div class="relative -top-6">
           <button
             onclick="router.navigate('tools')"
-            class="h-14 w-14 rounded-full flex items-center justify-center bg-zinc-900 border-2 border-[var(--theme-color)] shadow-[0_0_15px_var(--theme-glow)] active:scale-90 transition-all"
+            class="h-14 w-14 rounded-full flex items-center justify-center bg-zinc-900 border-2 border-[var(--theme-color)] shadow-lg active:scale-95 transition-all group"
           >
             <i
-              data-lucide="swords"
-              class="w-6 h-6 text-[var(--theme-color)]"
+              data-lucide="dumbbell"
+              class="w-6 h-6 text-[var(--theme-color)] group-hover:scale-110 transition-transform"
             ></i>
           </button>
         </div>
         <button onclick="router.navigate('achievements')" class="nav-btn group">
-          <i data-lucide="medal" class="icon-nav"></i
-          ><span class="label-nav">BADGES</span>
+          <i data-lucide="award" class="icon-nav"></i
+          ><span class="label-nav">META</span>
         </button>
         <button onclick="settings.open()" class="nav-btn group">
-          <i data-lucide="settings" class="icon-nav"></i
-          ><span class="label-nav">AJUSTES</span>
+          <i data-lucide="sliders-horizontal" class="icon-nav"></i
+          ><span class="label-nav">CONFIG</span>
         </button>
       </nav>
 
       <!-- MODAL: Timer -->
       <div
         id="timer-modal"
-        class="hidden fixed bottom-24 left-4 right-4 bg-[#111] border border-zinc-800 rounded-2xl shadow-2xl p-4 z-50 animate-slide-up"
+        class="hidden fixed bottom-24 left-4 right-4 bg-[#18181b] border border-zinc-800 rounded-xl shadow-2xl p-5 z-50 animate-slide-up"
       >
-        <div class="flex justify-between items-center mb-2">
+        <div class="flex justify-between items-center mb-4">
           <span
             class="text-[var(--theme-color)] text-xs font-bold uppercase tracking-wider flex items-center gap-2"
           >
-            <span
-              class="w-2 h-2 rounded-full bg-[var(--theme-color)] animate-pulse"
-            ></span>
-            Descanso
+            <i data-lucide="clock" class="w-3 h-3"></i>
+            Intervalo
           </span>
-          <div class="flex gap-3">
+          <div class="flex gap-4">
             <button
               onclick="timer.toggleMute()"
               id="btn-mute"
-              class="text-zinc-500 hover:text-white"
+              class="text-zinc-500 hover:text-white transition-colors"
             >
               <i data-lucide="volume-2" class="w-4 h-4"></i>
             </button>
             <button
               onclick="timer.close()"
-              class="text-zinc-500 hover:text-white"
+              class="text-zinc-500 hover:text-white transition-colors"
             >
               <i data-lucide="x" class="w-4 h-4"></i>
             </button>
@@ -139,27 +136,27 @@
         </div>
         <div
           id="timer-display"
-          class="text-5xl font-mono text-white text-center font-bold mb-4"
+          class="text-6xl font-mono text-white text-center font-bold mb-6 tracking-tighter tabular-nums"
         >
           00:45
         </div>
-        <div class="grid grid-cols-3 gap-2">
+        <div class="grid grid-cols-3 gap-3">
           <button
             onclick="timer.toggle()"
             id="timer-toggle-btn"
-            class="h-10 rounded-lg bg-[var(--theme-color)] text-black flex items-center justify-center font-bold"
+            class="h-12 rounded-lg bg-[var(--theme-color)] text-black hover:brightness-110 flex items-center justify-center transition-all"
           >
-            <i data-lucide="pause" class="w-5 h-5"></i>
+            <i data-lucide="pause" class="w-6 h-6 fill-current"></i>
           </button>
           <button
             onclick="timer.addTime(10)"
-            class="h-10 rounded-lg bg-zinc-800 text-zinc-300 font-bold text-xs border border-zinc-700"
+            class="h-12 rounded-lg bg-zinc-800 text-zinc-300 font-bold text-sm border border-zinc-700 hover:bg-zinc-700 transition-all"
           >
             +10s
           </button>
           <button
             onclick="timer.reset()"
-            class="h-10 rounded-lg bg-zinc-800 text-zinc-300 flex items-center justify-center border border-zinc-700"
+            class="h-12 rounded-lg bg-zinc-800 text-zinc-300 flex items-center justify-center border border-zinc-700 hover:bg-zinc-700 transition-all"
           >
             <i data-lucide="rotate-ccw" class="w-5 h-5"></i>
           </button>
@@ -172,24 +169,24 @@
         class="hidden modal-overlay animate-fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/80"
       >
         <div
-          class="bg-[#111] w-full max-w-sm rounded-2xl border border-zinc-800 p-5 shadow-2xl"
+          class="bg-[#18181b] w-full max-w-sm rounded-xl border border-zinc-800 p-6 shadow-2xl"
         >
           <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-bold text-white">Anotações</h3>
-            <button onclick="notesManager.close()" class="text-zinc-500">
+            <h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="file-text" class="w-5 h-5 text-zinc-400"></i> Notas Técnicas</h3>
+            <button onclick="notesManager.close()" class="text-zinc-500 hover:text-white">
               <i data-lucide="x" class="w-6 h-6"></i>
             </button>
           </div>
           <textarea
             id="note-input"
-            class="w-full h-32 input-dark rounded-xl p-3 text-sm resize-none mb-4"
-            placeholder="Ex: Banco 3, Pegada neutra..."
+            class="w-full h-32 input-dark rounded-lg p-3 text-sm resize-none mb-4 font-sans leading-relaxed"
+            placeholder="Ajuste do banco, carga progressiva, etc..."
           ></textarea>
           <button
             onclick="notesManager.save()"
-            class="w-full bg-[var(--theme-color)] text-black font-bold py-3 rounded-xl"
+            class="w-full bg-[var(--theme-color)] text-black font-bold py-3 rounded-lg hover:brightness-110 transition-all"
           >
-            SALVAR
+            SALVAR REGISTRO
           </button>
         </div>
       </div>
@@ -200,100 +197,69 @@
         class="hidden modal-overlay animate-fade-in fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80"
       >
         <div
-          class="bg-[#111] w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl border-t sm:border border-zinc-800 p-6 shadow-2xl max-h-[80vh] overflow-y-auto"
+          class="bg-[#18181b] w-full sm:max-w-sm rounded-t-2xl sm:rounded-2xl border-t sm:border border-zinc-800 p-6 shadow-2xl max-h-[85vh] overflow-y-auto"
         >
-          <div class="flex justify-between items-center mb-6">
+          <div class="flex justify-between items-center mb-8">
             <h3 class="text-xl font-bold text-white">Configurações</h3>
             <button
               onclick="settings.close()"
-              class="p-2 bg-zinc-800 rounded-full text-zinc-400"
+              class="p-2 bg-zinc-800 rounded-full text-zinc-400 hover:text-white transition-colors"
             >
               <i data-lucide="x" class="w-5 h-5"></i>
             </button>
           </div>
 
-          <h4 class="text-xs font-bold text-zinc-500 uppercase mb-3">Tema</h4>
-          <div class="grid grid-cols-4 gap-2 mb-6">
-            <button
-              onclick="themeManager.setTheme('zoro')"
-              class="h-10 bg-green-600 rounded-lg border-2 border-transparent focus:border-white relative overflow-hidden group"
-            >
-              <span
-                class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50 uppercase"
-                >Zoro</span
-              >
-            </button>
-            <button
-              onclick="themeManager.setTheme('luffy')"
-              class="h-10 bg-red-600 rounded-lg border-2 border-transparent focus:border-white relative overflow-hidden group"
-            >
-              <span
-                class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50 uppercase"
-                >Luffy</span
-              >
-            </button>
-            <button
-              onclick="themeManager.setTheme('sanji')"
-              class="h-10 bg-blue-600 rounded-lg border-2 border-transparent focus:border-white relative overflow-hidden group"
-            >
-              <span
-                class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50 uppercase"
-                >Sanji</span
-              >
-            </button>
-            <button
-              onclick="themeManager.setTheme('ace')"
-              class="h-10 bg-orange-500 rounded-lg border-2 border-transparent focus:border-white relative overflow-hidden group"
-            >
-              <span
-                class="absolute inset-0 flex items-center justify-center font-bold text-[10px] text-black/50 uppercase"
-                >Ace</span
-              >
-            </button>
+          <!-- Seção de Temas Profissionais -->
+          <div class="mb-8">
+            <h4 class="text-xs font-bold text-zinc-500 uppercase mb-4 tracking-widest">Tema da Interface</h4>
+            <div class="grid grid-cols-2 gap-3">
+                <button onclick="themeManager.setTheme('performance')" class="flex items-center gap-3 p-3 rounded-lg border border-zinc-800 bg-zinc-900/50 hover:border-blue-500 transition-all group">
+                    <div class="w-4 h-4 rounded-full bg-[#3b82f6] shadow-[0_0_10px_#3b82f6]"></div>
+                    <span class="text-sm font-medium text-zinc-300 group-hover:text-white">Performance</span>
+                </button>
+                <button onclick="themeManager.setTheme('hypertrophy')" class="flex items-center gap-3 p-3 rounded-lg border border-zinc-800 bg-zinc-900/50 hover:border-red-500 transition-all group">
+                    <div class="w-4 h-4 rounded-full bg-[#ef4444] shadow-[0_0_10px_#ef4444]"></div>
+                    <span class="text-sm font-medium text-zinc-300 group-hover:text-white">Hipertrofia</span>
+                </button>
+                <button onclick="themeManager.setTheme('stamina')" class="flex items-center gap-3 p-3 rounded-lg border border-zinc-800 bg-zinc-900/50 hover:border-emerald-500 transition-all group">
+                    <div class="w-4 h-4 rounded-full bg-[#10b981] shadow-[0_0_10px_#10b981]"></div>
+                    <span class="text-sm font-medium text-zinc-300 group-hover:text-white">Resistência</span>
+                </button>
+                <button onclick="themeManager.setTheme('strength')" class="flex items-center gap-3 p-3 rounded-lg border border-zinc-800 bg-zinc-900/50 hover:border-orange-500 transition-all group">
+                    <div class="w-4 h-4 rounded-full bg-[#f97316] shadow-[0_0_10px_#f97316]"></div>
+                    <span class="text-sm font-medium text-zinc-300 group-hover:text-white">Força</span>
+                </button>
+            </div>
           </div>
 
-          <div class="space-y-3">
-            <div class="p-4 bg-zinc-900 rounded-xl border border-zinc-800">
-              <h4 class="font-bold text-zinc-300 mb-3 text-sm">Dados</h4>
-              <div class="flex gap-2">
-                <button
-                  onclick="settings.exportData()"
-                  class="flex-1 bg-zinc-800 py-2 rounded text-xs font-bold text-white border border-zinc-700"
-                >
-                  EXPORTAR
+          <!-- Gestão de Dados -->
+          <div class="space-y-4">
+            <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest">Dados do Usuário</h4>
+            <div class="p-1 bg-zinc-900 rounded-xl border border-zinc-800 flex">
+                <button onclick="settings.exportData()" class="flex-1 py-3 text-xs font-bold text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors flex items-center justify-center gap-2">
+                    <i data-lucide="download" class="w-3 h-3"></i> BACKUP
                 </button>
-                <label
-                  class="flex-1 bg-zinc-800 py-2 rounded text-xs font-bold text-white border border-zinc-700 text-center cursor-pointer"
-                >
-                  IMPORTAR
-                  <input
-                    type="file"
-                    class="hidden"
-                    onchange="settings.importData(this)"
-                  />
+                <div class="w-px bg-zinc-800 my-2"></div>
+                <label class="flex-1 py-3 text-xs font-bold text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer">
+                    <i data-lucide="upload" class="w-3 h-3"></i> RESTAURAR
+                    <input type="file" class="hidden" onchange="settings.importData(this)" />
                 </label>
-              </div>
             </div>
 
             <button
               onclick="settings.clearAll()"
-              class="w-full py-3 text-red-500 text-xs font-bold border border-red-900/30 rounded-xl hover:bg-red-900/10"
+              class="w-full py-4 text-red-500 text-xs font-bold border border-red-900/20 bg-red-900/5 rounded-xl hover:bg-red-900/20 transition-colors flex items-center justify-center gap-2"
             >
-              RESETAR TUDO
+              <i data-lucide="trash-2" class="w-4 h-4"></i> RESETAR DADOS
             </button>
 
             <!-- Footer -->
-            <div class="mt-8 text-center pt-4 border-t border-zinc-800/50">
-              <p
-                class="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-1"
-              >
-                Todos os direitos reservados a
-                <span class="text-[var(--theme-color)]"
-                  >Fernando Rodrigues</span
-                >
+            <div class="mt-8 text-center pt-6 border-t border-zinc-800/50">
+              <p class="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-1">
+                Todos os direitos reservados a <span class="text-[var(--theme-color)]">Fernando Rodrigues</span>
               </p>
-              <p class="text-zinc-600 text-[9px] font-mono">
-                © 2025 • Projeto Zoro v5.0
+              <p class="text-zinc-600 text-[10px] font-mono">
+                Pro Gym App v1.0 • Build 2025
               </p>
             </div>
           </div>

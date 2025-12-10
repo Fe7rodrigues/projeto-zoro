@@ -1,118 +1,102 @@
-# Projeto Zoro v5.5 ⚔️
+# Pro Gym App v1.0 🏋️
 
-Aplicativo profissional de monitoramento de treinos de musculação, focado em alta densidade, progressão de carga e execução técnica precisa. Desenvolvido com tecnologias web modernas para uma experiência app-like fluida, agora com uma interface futurista imersiva.
+Sistema profissional de gestão de treinos e performance, desenvolvido com foco em métricas, densidade de trabalho e uma interface técnica de alta precisão.
 
 ---
 
 ## 📋 Visão Geral
 
-O Projeto Zoro atingiu um novo patamar de sofisticação na versão **5.5**.
+O **Pro Gym App (v1.0)** representa uma evolução completa da plataforma, abandonando temas lúdicos em favor de uma estética **Clean Dark & Technical**.
 
-Projetado especificamente para a rede **Panobianco Academia**, o app mapeia os equipamentos exatos da marca **Kikos** e oferece tutoriais em vídeo integrados para cada movimento.
-
-A interface foi totalmente redesenhada com uma estética **Cyberpunk/Retrowave**, focada em performance e motivação visual.
+Projetado para praticantes sérios e atletas, o aplicativo utiliza terminologia técnica da educação física e entrega uma experiência livre de distrações — foco total nos dados, precisão e execução do movimento.
 
 ---
 
-## 🚀 Tecnologias Utilizadas
+## 🚀 Stack Tecnológica
 
 **Core:** HTML5 Semântico, JavaScript (ES6+ Modular), CSS3 Avançado  
-**Estilização:** Tailwind CSS + CSS Custom Properties & Keyframes  
-**Ícones:** Lucide Icons  
-**Mídia:** YouTube IFrame API (Embeds)  
-**Persistência:** localStorage com gestão de estado reativa  
+**UI/UX:** Tailwind CSS + Glassmorphism + Variáveis CSS Dinâmicas  
+**Ícones:** Lucide Icons (vetores otimizados)  
+**Mídia:** YouTube IFrame API (embeds leves)  
+**Persistência:** localStorage com namespace isolado (`pro_gym_app_v1`)  
 
 ---
 
-## ✨ Novas Funcionalidades (v5.5)
+## ✨ Funcionalidades da Versão 1.0
 
-### 🚀 Splash Screen Animada
+### 🖥️ Interface Profissional (Pro UI)
 
-Uma experiência de inicialização nativa com carregamento estilizado.
+Design minimalista com foco em usabilidade noturna e ergonomia visual.
 
-- **Logo Rotativo com Neon:** Efeito de rotação e pulso luminoso durante o boot.  
-- **Transição Suave:** Fade-out cinematográfico ao revelar a tela inicial.
+**Temas Técnicos:**
 
----
+- 🔵 **Performance (Padrão):** Foco e precisão  
+- 🔴 **Hipertrofia:** Intensidade e volume  
+- 🟢 **Resistência:** Condicionamento e cadência  
+- 🟠 **Força:** Carga máxima e potência  
 
-### 🎥 Tutoriais de Execução (YouTube Integration)
-
-Aprenda a forma correta sem sair do app.
-
-- **Vídeos Integrados:** Players do YouTube embutidos em cada card de exercício.  
-- **Curadoria Panobianco:** Prioridade para vídeos da série *Fast Fit*, garantindo instrução fiel aos equipamentos reais.
+**Glassmorphism:** Elementos translúcidos para hierarquia visual moderna.
 
 ---
 
-### 🏋️ Mapeamento de Equipamentos KIKOS
+### 📊 Painel de Controle (Dashboard)
 
-Treine com precisão absoluta.
+Visualização e análise técnica imediata.
 
-- **Identificação de Máquinas:** Cada exercício mostra o modelo exato do equipamento Kikos  
-  *(ex: Kikos Plate Load PR70, Pro Station TTMS25)*.
-
----
-
-### 🌌 Interface Futurista (Cyberpunk UI)
-
-Experiência visual gamificada e energética.
-
-- **Fundo Animado:** Grid 3D em movimento constante com efeito Retrowave.  
-- **Efeitos Neon:** Botões e indicadores com brilho intenso e sombras coloridas.  
-- **Responsividade:** Animações aceleradas por GPU para manter 60fps no mobile.
+- **Heatmap de Consistência:** Grade de frequência no estilo GitHub Contributions  
+- **Ranks Profissionais:** Progressão de *Iniciante → Intermediário → Avançado → Pro*  
+- **Métricas de Volume:** Cálculo automático da tonelagem total da sessão  
 
 ---
 
-## 🔥 Funcionalidades de Suporte
+### 🏋️ Rotina Split A–F (6 Dias)
 
-- **Lembrete Thermo Flame:** Cartão de destaque para suplementação pré-treino.  
-- **Temas de Personagem:**  
-  Zoro (Verde), Luffy (Vermelho), Sanji (Azul), Ace (Laranja).
+Estrutura completa para alta frequência semanal.
+
+- **A:** Peitoral & Tríceps (*Push Focus*)  
+- **B:** Dorsais & Bíceps (*Pull Focus*)  
+- **C:** Membros Inferiores (*Legs Focus*)  
+- **D:** Ombros & Trapézio (*Delts Focus*)  
+- **E:** Braços Completos (*Arms Focus*)  
+- **F:** Posterior & Glúteos (*Glutes Focus*)  
 
 ---
 
-## 📊 Ferramentas Analíticas & Utilitários
+## 🛠️ Utilitários Integrados
 
-- **Dashboard de Stats:** Gráfico de barras em CSS puro para volume semanal.  
-- **Calculadora de Anilhas:** Montagem rápida de barras olímpicas.  
-- **Estimativa de 1RM:** Cálculo de força máxima teórica.  
-- **Timer Hápitico:** Cronômetro com vibração e controle de áudio.
+- **Calculadora 1RM:** Estimativa com fórmulas de Epley e Brzycki  
+- **Montagem de Barra:** Algoritmo para calcular anilhas em barras olímpicas de 20kg  
+- **Timer Hápitico:** Intervalos com vibração (quando suportado)  
 
 ---
 
 ## 📂 Estrutura do Projeto
 
-projeto-zoro-v5.0/
+pro-gym-app/
 ├── css/
-│ └── style.css # Estilos Cyberpunk, Animações 3D e Variáveis
+│ └── style.css # Variáveis de Tema, Glassmorphism e Animações
 ├── js/
-│ └── script.js # Lógica de Negócio, YouTube Mapping e Store
+│ └── script.js # Lógica de Negócio, Store e Gestão de Estado
 ├── assets/
 │ └── img/
 │ ├── icon.png # Ícone do App (PWA)
 │ └── logo.png # Favicon
-├── index.html # App Shell, Modais, Views e Player de Vídeo
-├── manifest.json # Configuração do PWA (Ícones, Nome, Cores)
-├── service-worker.js # Cache para funcionamento Offline
+├── index.html # App Shell e Componentes de UI
+├── manifest.json # Configuração do PWA (Nome, Cores, Ícones)
+├── service-worker.js # Cache Estratégico (Offline First)
 └── README.md # Documentação Técnica
-
-
 ---
 
-## 🛠️ Como Executar Localmente
+## 🛠️ Instalação e Execução
 
-**Download:**  
-Baixe os arquivos `index.html`, `style.css` e `script.js` para a mesma pasta.
-
-**Execução:**
-
-- **Simples:** Abra o arquivo `index.html` no navegador.  
-- **Modo Dev:** Utilize a extensão **Live Server** no VS Code para hot-reload.  
-- **Modo Mobile:** No computador, pressione `F12` → `Ctrl + Shift + M` para simular a visualização mobile.
+**Requisitos:** Navegador moderno com suporte a ES6+.  
+**Local:** Baixe todos os arquivos e abra o `index.html`.  
+**PWA:** Em dispositivos móveis, utilize *Adicionar à Tela de Início* para instalar.  
+**Reset:** Acesse **Configurações > Resetar Dados** para limpar o armazenamento local.
 
 ---
 
 ## 🔒 Direitos Autorais
 
 Todos os direitos reservados a **Fernando Rodrigues**.  
-© 2025
+Desenvolvido com precisão técnica. © 2025
