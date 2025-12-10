@@ -1,5 +1,5 @@
 /**
- * PRO GYM APP V1.2
+ * PRO GYM APP V1.1
  * Copyright (c) 2025 Fernando Rodrigues. Todos os direitos reservados.
  * Descrição: Sistema profissional de gestão de treinos com RPE e Radar Chart.
  * Theme: Clean Dark & Technical
@@ -123,18 +123,23 @@ function checkMaxLoad(s) {
     return max;
 }
 
-// NOVO: Helper para gerar Gráfico de Radar SVG
+// CORRIGIDO: Helper para gerar Gráfico de Radar SVG (Ajuste de ViewBox e Rótulos)
 function generateRadarChart(vol) {
     const categories = ['Peitoral', 'Costas', 'Pernas', 'Ombros', 'Braços'];
-    const maxVal = 24; // Meta de volume semanal
-    const centerX = 100, centerY = 100, radius = 80;
-    
+    const maxVal = 24; 
+    const svgSize = 250; 
+    const centerX = svgSize / 2, centerY = svgSize / 2;
+    const radius = 80; 
+
     // Calcula pontos do polígono
     const points = categories.map((cat, i) => {
         let val = vol[cat] || 0;
         
-        // Limita ao máximo para não estourar o gráfico
-        const normalized = Math.min(val / maxVal, 1);
+        // CORREÇÃO: Garante que normalized seja no mínimo 0, prevenindo NaN ou valores inesperados.
+        // Se val é 0, normalized é 0, e o ponto será no centro (centerX, centerY).
+        const normalized = maxVal === 0 ? 0 : Math.min(val / maxVal, 1);
+        
+        // Ajusta o ângulo inicial para que 'Peitoral' (0º) aponte para CIMA (-Math.PI / 2)
         const angle = (Math.PI * 2 * i) / categories.length - Math.PI / 2;
         const x = centerX + radius * normalized * Math.cos(angle);
         const y = centerY + radius * normalized * Math.sin(angle);
@@ -153,20 +158,28 @@ function generateRadarChart(vol) {
         grid += `<polygon points="${gridPoints}" fill="none" stroke="#3f3f46" stroke-width="0.5" stroke-dasharray="2" />`;
     }
 
-    // Eixos
+    // Eixos e Rótulos (Ajustei o raio para os rótulos e o anchor para centralização)
+    const labelRadius = radius + 30; // Distância maior para rótulos
     const axes = categories.map((cat, i) => {
         const angle = (Math.PI * 2 * i) / categories.length - Math.PI / 2;
         const x = centerX + radius * Math.cos(angle);
         const y = centerY + radius * Math.sin(angle);
-        // Labels
-        const lx = centerX + (radius + 20) * Math.cos(angle);
-        const ly = centerY + (radius + 20) * Math.sin(angle);
-        return `<line x1="${centerX}" y1="${centerY}" x2="${x}" y2="${y}" stroke="#3f3f46" stroke-width="0.5" />
-                <text x="${lx}" y="${ly}" fill="#a1a1aa" font-size="9" text-anchor="middle" alignment-baseline="middle" font-family="monospace" font-weight="bold">${cat}</text>`;
-    }).join('');
+        
+        // Ajuste fino do ponto de ancoragem do texto para centralizar o rótulo
+        let textAnchor = 'middle';
+        if (i === 1) textAnchor = 'start'; // Costas (direita)
+        if (i === 3) textAnchor = 'end'; // Ombros (esquerda)
 
+        const lx = centerX + labelRadius * Math.cos(angle);
+        const ly = centerY + labelRadius * Math.sin(angle);
+        
+        return `<line x1="${centerX}" y1="${centerY}" x2="${x}" y2="${y}" stroke="#3f3f46" stroke-width="0.5" />
+                <text x="${lx}" y="${ly}" fill="#a1a1aa" font-size="9" text-anchor="${textAnchor}" alignment-baseline="middle" font-family="monospace" font-weight="bold">${cat}</text>`;
+    }).join('');
+    
+    // ViewBox corrigido para 250x250, que agora tem margem
     return `
-    <svg viewBox="0 0 200 220" class="w-full h-full drop-shadow-2xl animate-fade-in" style="overflow: visible;">
+    <svg viewBox="0 0 ${svgSize} ${svgSize}" class="w-full h-full drop-shadow-2xl animate-fade-in" style="overflow: visible;">
         ${grid}
         ${axes}
         <polygon points="${points}" fill="var(--theme-glow)" stroke="var(--theme-color)" stroke-width="2" fill-opacity="0.4" />
@@ -174,7 +187,7 @@ function generateRadarChart(vol) {
         ${categories.map((cat, i) => {
              // Pontos nos vértices
             let val = vol[cat] || 0;
-            const normalized = Math.min(val / maxVal, 1);
+            const normalized = maxVal === 0 ? 0 : Math.min(val / maxVal, 1);
             const angle = (Math.PI * 2 * i) / categories.length - Math.PI / 2;
             const x = centerX + radius * normalized * Math.cos(angle);
             const y = centerY + radius * normalized * Math.sin(angle);
@@ -708,14 +721,22 @@ const router = {
 
             <!-- Heatmap Clássico -->
             <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-6 mb-4 shadow-sm">
-                <!-- ... (código do heatmap igual ao anterior) ... -->
                 <h3 class="text-xs font-bold text-zinc-500 uppercase mb-4 tracking-widest flex items-center gap-2"><i data-lucide="calendar" class="w-3 h-3"></i> Histórico (100 dias)</h3>
                 <div class="heatmap-grid pb-2">
                     ${cells}
                 </div>
             </div>
 
-            <!-- ... (Restante) ... -->
+            <div class="grid grid-cols-2 gap-4">
+                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
+                    <span class="text-xs text-zinc-500 block mb-1 font-bold uppercase">Treinos Concluídos</span>
+                    <span class="text-3xl font-bold text-white font-mono tracking-tighter">${Object.keys(store.data.workoutHistory || {}).length}</span>
+                </div>
+                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
+                    <span class="text-xs text-zinc-500 block mb-1 font-bold uppercase">Volume Total (XP)</span>
+                    <span class="text-3xl font-bold text-[var(--theme-color)] font-mono tracking-tighter">${store.data.xp}</span>
+                </div>
+            </div>
             <div class="h-10"></div>
         </div>`;
         safeIcons();
