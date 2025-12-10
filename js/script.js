@@ -1,7 +1,7 @@
 /**
- * PROJETO ZORO V5.0 - ULTIMATE EDITION (STABLE)
+ * PROJETO ZORO V5.0 - ULTIMATE EDITION (FIXED)
  * Autor: Fernando Rodrigues
- * Fix: Inicialização robusta e tratamento de erros de dados
+ * Fix: Tratamento de erro para LocalStorage corrompido e falha de bibliotecas
  */
 
 // --- CONFIGURAÇÃO ---
@@ -74,9 +74,10 @@ const WORKOUT_PLAN = [
 function checkWeeklyConsistency(s) {
     const today = new Date();
     let count = 0;
+    const history = s.workoutHistory || {};
     for(let i=0; i<7; i++) {
         const d = new Date(today); d.setDate(today.getDate()-i);
-        if(s.workoutHistory && s.workoutHistory[d.toISOString().split('T')[0]]) count++;
+        if(history[d.toISOString().split('T')[0]]) count++;
     }
     return count;
 }
@@ -84,7 +85,8 @@ function checkMaxLoad(s) {
     let max = 0;
     if (s.weights) {
         Object.values(s.weights).forEach(w => { 
-            if(parseFloat(w) > max) max = parseFloat(w); 
+            const val = parseFloat(w);
+            if(!isNaN(val) && val > max) max = val; 
         });
     }
     return max;
@@ -110,18 +112,25 @@ const store = {
         if (saved) { 
             try {
                 const parsed = JSON.parse(saved);
-                this.data = { ...this.data, ...parsed };
-                // Garante que nenhum campo crítico seja undefined
-                this.data.visibleVideos = {}; 
+                if (parsed && typeof parsed === 'object') {
+                    this.data = { ...this.data, ...parsed };
+                }
+                
+                // Validação de Integridade (Correção para dados antigos)
+                if (!this.data.visibleVideos) this.data.visibleVideos = {}; 
                 if (!this.data.settings) this.data.settings = { theme: 'zoro', soundEnabled: true };
                 if (!this.data.prevWeights) this.data.prevWeights = {};
+                if (!this.data.weights) this.data.weights = {};
                 if (!this.data.workoutHistory) this.data.workoutHistory = {};
+                if (!this.data.completedSets || Array.isArray(this.data.completedSets)) this.data.completedSets = {};
                 if (typeof this.data.xp !== 'number') this.data.xp = 0;
+                
             } catch (e) {
-                console.error("Erro no load, usando defaults.", e);
+                console.error("Erro no load (Resetando):", e);
+                // Em caso de corrupção total, mantemos o default
             }
         }
-        themeManager.apply(this.data.settings.theme);
+        themeManager.apply(this.data.settings.theme || 'zoro');
     },
     save() {
         const completedCount = Object.values(this.data.completedSets || {}).filter(Boolean).length;
@@ -146,7 +155,6 @@ const themeManager = {
         store.data.settings.theme = key; 
         this.apply(key); 
         store.save();
-        // Recarrega a home se estiver visível
         if (document.getElementById('main-header') && document.getElementById('main-header').classList.contains('hidden')) {
             router.renderHome(document.getElementById('main-content'));
         }
@@ -159,8 +167,10 @@ const utils = {
     getFormattedDate: () => {
         const date = new Date();
         const options = { weekday: 'long', day: 'numeric', month: 'long' };
-        const str = date.toLocaleDateString('pt-BR', options);
-        return str.charAt(0).toUpperCase() + str.slice(1);
+        try {
+            const str = date.toLocaleDateString('pt-BR', options);
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        } catch(e) { return "Hoje"; }
     },
 
     getWeekDays: () => {
@@ -220,9 +230,11 @@ const utils = {
 };
 
 // --- MODULES ---
+const safeIcons = () => { if(typeof lucide !== 'undefined') lucide.createIcons(); };
+
 const timer = {
     interval: null, timeLeft: 0, defaultTime: 45, isActive: false, audioCtx: null,
-    initAudio() { if(!this.audioCtx) this.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); },
+    initAudio() { if(!this.audioCtx && (window.AudioContext || window.webkitAudioContext)) this.audioCtx = new (window.AudioContext || window.webkitAudioContext)(); },
     toggleMute() { store.data.settings.soundEnabled = !store.data.settings.soundEnabled; store.save(); this.updateMuteIcon(); },
     updateMuteIcon() {
         const btn = document.getElementById('btn-mute');
@@ -230,21 +242,23 @@ const timer = {
             btn.innerHTML = store.data.settings.soundEnabled 
                 ? '<i data-lucide="volume-2" class="w-4 h-4"></i>' 
                 : '<i data-lucide="volume-x" class="w-4 h-4 text-red-500"></i>';
-            lucide.createIcons();
+            safeIcons();
         }
     },
     beep() {
         if(!store.data.settings.soundEnabled || !this.audioCtx) return;
-        const osc = this.audioCtx.createOscillator(); const gain = this.audioCtx.createGain();
-        osc.connect(gain); gain.connect(this.audioCtx.destination);
-        osc.frequency.value = 800; gain.gain.value = 0.1;
-        osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, this.audioCtx.currentTime + 0.5);
-        osc.stop(this.audioCtx.currentTime + 0.5);
+        try {
+            const osc = this.audioCtx.createOscillator(); const gain = this.audioCtx.createGain();
+            osc.connect(gain); gain.connect(this.audioCtx.destination);
+            osc.frequency.value = 800; gain.gain.value = 0.1;
+            osc.start(); gain.gain.exponentialRampToValueAtTime(0.00001, this.audioCtx.currentTime + 0.5);
+            osc.stop(this.audioCtx.currentTime + 0.5);
+        } catch(e) {}
     },
     start(s) {
         this.initAudio(); this.timeLeft = s; this.defaultTime = s; this.isActive = true;
         document.getElementById('timer-modal').classList.remove('hidden'); this.updateMuteIcon(); this.render(); this.run();
-        lucide.createIcons();
+        safeIcons();
     },
     run() {
         clearInterval(this.interval);
@@ -269,14 +283,14 @@ const timer = {
         const btn = document.getElementById('timer-toggle-btn');
         if(btn) { 
             btn.innerHTML = p ? '<i data-lucide="pause" class="w-5 h-5 fill-current"></i>' : '<i data-lucide="play" class="w-5 h-5 fill-current"></i>'; 
-            lucide.createIcons(); 
+            safeIcons(); 
         }
     }
 };
 
 const notesManager = {
     cid: null,
-    open(id) { this.cid = id; document.getElementById('note-input').value = store.data.notes[id] || ''; document.getElementById('notes-modal').classList.remove('hidden'); },
+    open(id) { this.cid = id; document.getElementById('note-input').value = (store.data.notes && store.data.notes[id]) || ''; document.getElementById('notes-modal').classList.remove('hidden'); },
     save() { store.data.notes[this.cid] = document.getElementById('note-input').value; store.save(); this.close(); router.renderDetail(document.getElementById('main-content'), router.currentParams); },
     close() { document.getElementById('notes-modal').classList.add('hidden'); }
 };
@@ -293,7 +307,7 @@ const settings = {
     importData(i) {
         const f = i.files[0]; if(!f) return;
         const r = new FileReader();
-        r.onload = e => { try { store.data = JSON.parse(e.target.result); store.save(); alert('Sucesso!'); location.reload(); } catch(e) { alert('Erro.'); } };
+        r.onload = e => { try { store.data = JSON.parse(e.target.result); store.save(); alert('Sucesso!'); location.reload(); } catch(e) { alert('Erro no arquivo.'); } };
         r.readAsText(f);
     }
 };
@@ -320,6 +334,8 @@ const router = {
         const app = document.getElementById('main-content');
         const header = document.getElementById('main-header');
         const nav = document.getElementById('bottom-nav');
+        if(!app) return;
+
         app.innerHTML = '';
         
         if (route === 'home') { header.classList.add('hidden'); nav.classList.remove('hidden'); this.renderHome(app); }
@@ -328,7 +344,7 @@ const router = {
         else if (route === 'tools') { header.classList.add('hidden'); nav.classList.remove('hidden'); this.renderTools(app); }
         else if (route === 'achievements') { header.classList.add('hidden'); nav.classList.remove('hidden'); this.renderAchievements(app); }
         
-        lucide.createIcons();
+        safeIcons();
     },
 
     renderHome(c) {
@@ -342,19 +358,17 @@ const router = {
         }
 
         const days = utils.getWeekDays().map(d => {
-            const done = store.data.workoutHistory && store.data.workoutHistory[d.iso];
+            const history = store.data.workoutHistory || {};
+            const done = history[d.iso];
             return `<div class="flex flex-col items-center gap-1"><div class="w-8 h-10 rounded border flex items-center justify-center text-xs font-bold transition-all ${done ? 'bg-theme border-theme text-black shadow-[0_0_10px_var(--theme-glow)]' : 'bg-zinc-900 border-zinc-800 text-zinc-600'}">${done ? '<i data-lucide="check" class="w-4 h-4"></i>' : d.lbl}</div></div>`;
         }).join('');
 
         c.innerHTML = `
             <div class="px-4 animate-fade-in pb-10">
-                <!-- Date Header -->
                 <div class="mb-4">
                     <h2 class="text-xl font-bold text-white leading-none">${utils.getFormattedDate()}</h2>
                     <p class="text-xs text-zinc-500 mt-1">Bem-vindo, guerreiro.</p>
                 </div>
-
-                <!-- Rank Header -->
                 <div class="mb-6 pt-2">
                     <div class="flex justify-between items-end mb-2">
                         <div><h2 class="text-xs font-bold text-zinc-500 uppercase">Nível Atual</h2><h1 class="text-2xl font-bold text-white tracking-tight text-theme drop-shadow-md">${rank.name}</h1></div>
@@ -362,18 +376,17 @@ const router = {
                     </div>
                     <div class="h-2 bg-zinc-900 rounded-full overflow-hidden border border-zinc-800"><div class="h-full bg-theme animate-progress shadow-[0_0_10px_var(--theme-glow)]" style="--target-width: ${pct}%"></div></div>
                 </div>
-
-                <!-- Consistency -->
                 <div class="bg-zinc-900/50 border border-zinc-800 rounded-2xl p-4 mb-6 backdrop-blur-sm"><div class="flex justify-between mb-3"><h3 class="text-xs font-bold text-zinc-400 uppercase">Consistência</h3></div><div class="flex justify-between">${days}</div></div>
                 
-                <!-- Thermo Flame Reminder -->
                 <div class="bg-gradient-to-r from-red-900/20 to-orange-900/20 border border-red-500/30 p-4 rounded-2xl flex items-center gap-4 mb-6 backdrop-blur-sm">
                     <div class="bg-red-500/20 p-2 rounded-lg"><i data-lucide="flame" class="w-6 h-6 text-red-500"></i></div>
                     <div><h4 class="text-red-200 font-bold text-sm">Thermo Flame Ativo</h4><p class="text-red-400/60 text-xs">Lembrete: Tomar 30min antes.</p></div>
                 </div>
 
                 <div class="grid gap-3">${WORKOUT_PLAN.map(day => {
-                    let done = 0; day.exercises.forEach(ex => { for(let i=0;i<4;i++) if(store.data.completedSets && store.data.completedSets[`${ex.id}-${i}`]) done++; });
+                    let done = 0; 
+                    const sets = store.data.completedSets || {};
+                    day.exercises.forEach(ex => { for(let i=0;i<4;i++) if(sets[`${ex.id}-${i}`]) done++; });
                     const p = Math.round((done/(day.exercises.length*4))*100);
                     const isComplete = p === 100;
                     return `<button onclick="router.navigate('detail', {id: '${day.id}'})" class="relative w-full bg-zinc-900 border ${isComplete?'border-theme':'border-zinc-800'} p-4 rounded-2xl text-left overflow-hidden group active:scale-[0.98] transition-all hover:border-zinc-700">
@@ -391,11 +404,12 @@ const router = {
 
     renderDetail(c, p) {
         const w = WORKOUT_PLAN.find(x => x.id === p.id); if(!w) return;
-        let load = 0; 
-        
+        let load = 0, setsDone = 0, totalSets = w.exercises.length * 4;
+        const sets = store.data.completedSets || {};
+
         w.exercises.forEach(ex => {
-            const wt = parseFloat(store.data.weights && store.data.weights[ex.id]) || 0;
-            for(let i=0;i<4;i++) if(store.data.completedSets && store.data.completedSets[`${ex.id}-${i}`]) { load += wt * 10; }
+            const wt = parseFloat((store.data.weights && store.data.weights[ex.id]) || 0);
+            for(let i=0;i<4;i++) if(sets[`${ex.id}-${i}`]) { load += wt; setsDone++; }
         });
 
         document.getElementById('main-header').innerHTML = `
@@ -438,7 +452,7 @@ const router = {
                     </div>
                     ${videoContent}
                     <div class="grid grid-cols-4 gap-2 mt-3">${[0,1,2,3].map(j => {
-                        const done = store.data.completedSets && store.data.completedSets[`${ex.id}-${j}`];
+                        const done = sets[`${ex.id}-${j}`];
                         const animClass = (p.animSet === `${ex.id}-${j}`) ? 'animate-pop' : '';
                         return `<button onclick="actions.toggle('${ex.id}',${j},${ex.rest})" class="btn-set h-10 rounded-lg flex flex-col items-center justify-center gap-0.5 ${done?'active':''} ${animClass} bg-zinc-950 border-zinc-800 text-zinc-600"><span class="text-[9px] font-bold">SET ${j+1}</span></button>`;
                     }).join('')}</div>
@@ -458,8 +472,7 @@ const router = {
                 <button onclick="actions.finish()" class="w-full max-w-sm bg-theme hover:brightness-110 text-black font-bold py-4 rounded-2xl shadow-lg shadow-theme/20 flex items-center justify-center gap-2 transition-all transform hover:scale-105 animate-bounce-subtle"><i data-lucide="trophy" class="w-6 h-6"></i>CONCLUIR MISSÃO</button>
             </div><div class="h-24"></div>` : '<div class="h-10"></div>'}
         </div>`;
-        
-        lucide.createIcons();
+        safeIcons();
     },
 
     renderStats(c) {
@@ -484,11 +497,11 @@ const router = {
             </div>
 
             <div class="grid grid-cols-2 gap-3">
-                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4"><span class="text-xs text-zinc-500 block mb-1">Total Treinos</span><span class="text-2xl font-bold text-white font-mono">${Object.keys(store.data.workoutHistory).length}</span></div>
-                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4"><span class="text-xs text-zinc-500 block mb-1">Séries Totais</span><span class="text-2xl font-bold text-theme font-mono">${store.data.xp}</span></div>
+                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4"><span class="text-xs text-zinc-500 block mb-1">Total Treinos</span><span class="text-2xl font-bold text-white font-mono">${Object.keys(store.data.workoutHistory || {}).length}</span></div>
+                <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-4"><span class="text-xs text-zinc-500 block mb-1">XP Total</span><span class="text-2xl font-bold text-theme font-mono">${store.data.xp}</span></div>
             </div><div class="h-10"></div>
         </div>`;
-        lucide.createIcons();
+        safeIcons();
     },
 
     renderAchievements(c) {
@@ -513,7 +526,7 @@ const router = {
             </div>
             <div class="h-10"></div>
         </div>`;
-        lucide.createIcons();
+        safeIcons();
     },
 
     renderTools(c) {
@@ -536,7 +549,7 @@ const router = {
                 <div id="plate-result" class="flex flex-wrap gap-2 justify-center bg-zinc-950 p-3 rounded-lg border border-zinc-800 min-h-[50px] items-center"><span class="text-zinc-600 text-xs">Anilhas aparecerão aqui</span></div>
             </div><div class="h-10"></div>
         </div>`;
-        lucide.createIcons();
+        safeIcons();
     }
 };
 
@@ -548,7 +561,6 @@ const actions = {
         const d = !store.data.completedSets[k]; 
         store.data.completedSets[k] = d;
         
-        // Passa o ID da animação no params para renderizar APENAS esse com a classe
         const animId = d ? k : null;
         
         if(d) {
@@ -563,8 +575,6 @@ const actions = {
         }
         
         store.save(); 
-        
-        // Atualiza params com animSet
         const newParams = { ...router.currentParams, animSet: animId };
         router.renderDetail(document.getElementById('main-content'), newParams);
     },
@@ -592,38 +602,35 @@ const actions = {
     reset(id) {
         if(!confirm('Resetar treino?')) return;
         const w = WORKOUT_PLAN.find(x => x.id === id); let rm = 0;
-        w.exercises.forEach(ex => { for(let i=0;i<4;i++) if(store.data.completedSets && store.data.completedSets[`${ex.id}-${i}`]) { rm++; delete store.data.completedSets[`${ex.id}-${i}`]; } });
-        store.data.xp = Math.max(0, (store.data.xp || 0) - rm); 
-        store.save(); 
-        router.renderDetail(document.getElementById('main-content'), router.currentParams);
+        if(w && store.data.completedSets) {
+            w.exercises.forEach(ex => { for(let i=0;i<4;i++) if(store.data.completedSets[`${ex.id}-${i}`]) { rm++; delete store.data.completedSets[`${ex.id}-${i}`]; } });
+            store.data.xp = Math.max(0, (store.data.xp || 0) - rm); 
+            store.save(); 
+            router.renderDetail(document.getElementById('main-content'), router.currentParams);
+        }
     },
     finish() { alert('Treino Concluído! +100XP'); router.navigate('home'); }
 };
 
-// --- SPLASH SCREEN LOGIC ---
+// --- SPLASH SCREEN & INIT ---
 function initApp() {
     const splash = document.getElementById('splash-screen');
     if (splash) {
         setTimeout(() => {
             splash.style.opacity = '0';
-            setTimeout(() => {
-                splash.style.display = 'none';
-            }, 500); // Wait for transition to finish
-        }, 2000); // Show splash for 2 seconds
+            setTimeout(() => { splash.style.display = 'none'; }, 500);
+        }, 2000);
     }
 }
 
-// Registro de Service Worker para PWA
 if ('serviceWorker' in navigator) {
     window.addEventListener('load', () => {
-        navigator.serviceWorker.register('service-worker.js')
-            .then(reg => console.log('SW registrado', reg))
-            .catch(err => console.log('SW falhou', err));
+        navigator.serviceWorker.register('service-worker.js').catch(err => console.log('SW falhou', err));
     });
 }
 
 document.addEventListener('DOMContentLoaded', () => { 
-    initApp(); // Inicia o Splash
+    initApp(); 
     store.load(); 
     router.navigate('home'); 
 });
