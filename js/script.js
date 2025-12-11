@@ -12,7 +12,8 @@ const THEMES = {
     stamina:     { color: '#10b981', hover: '#059669', glow: 'rgba(16, 185, 129, 0.5)', bgSoft: 'rgba(16, 185, 129, 0.1)' }, // Verde
     strength:    { color: '#f97316', hover: '#ea580c', glow: 'rgba(249, 115, 22, 0.5)', bgSoft: 'rgba(249, 115, 22, 0.1)' }, // Laranja
     energy:      { color: '#FD0963', hover: '#D00750', glow: 'rgba(253, 9, 99, 0.6)', bgSoft: 'rgba(253, 9, 99, 0.15)' },   // Rosa Neon
-    cosmos:      { color: '#8B5CF6', hover: '#3C0A6D', glow: 'rgba(139, 92, 246, 0.6)', bgSoft: 'rgba(60, 10, 109, 0.25)' } // Roxo Cósmico
+    // ATUALIZADO: Tema Cósmico agora é Roxo Neon Vibrante (#A855F7 - Purple 500/600 ajustado)
+    cosmos:      { color: '#A855F7', hover: '#9333EA', glow: 'rgba(168, 85, 247, 0.6)', bgSoft: 'rgba(168, 85, 247, 0.15)' } 
 };
 
 // --- SISTEMA DE PROGRESSÃO ---
@@ -501,9 +502,10 @@ const router = {
 
         c.innerHTML = `
             <div class="px-5 animate-fade-in pb-10">
-                <!-- Icon Main no Topo -->
-                <div class="flex justify-center mb-6 pt-2">
-                    <img src="Icon-main.png" class="w-12 h-12 drop-shadow-lg" alt="Pro Gym Icon" />
+                <!-- Icon Main no Topo com Neon -->
+                <div class="flex justify-center mb-6 pt-2 relative">
+                    <div class="absolute w-16 h-16 bg-[var(--theme-color)] rounded-full blur-[20px] opacity-40 animate-pulse"></div>
+                    <img src="assets/img/icon-main.png" class="w-16 h-16 drop-shadow-lg animate-pulse-hover relative z-10" alt="Pro Gym Icon" />
                 </div>
 
                 <!-- Header Info -->

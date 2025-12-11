@@ -228,45 +228,22 @@ body {
 @keyframes slideUp { from { transform: translateY(20px); opacity: 0; } to { transform: translateY(0); opacity: 1; } }
 @keyframes widthGrow { from { width: 0; } to { width: var(--target-width); } }
 @keyframes pop-check { 0% { transform: scale(1); } 50% { transform: scale(0.9); } 100% { transform: scale(1); } }
+@keyframes spin-slow { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
 @keyframes progress-indet { 0% { transform: translateX(-100%); } 100% { transform: translateX(100%); } }
 
-/* --- ORBITAL TECH LOADERS (Splash v1.1) --- */
-@keyframes reactor-spin-fast {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
+/* NOVO: Animação de Flutuação (Pulse Hover) */
+@keyframes pulse-hover {
+  0%, 100% { transform: translateY(0) scale(1); filter: drop-shadow(0 4px 4px rgba(0, 0, 0, 0.5)); }
+  50% { transform: translateY(-5px) scale(1.05); filter: drop-shadow(0 8px 8px rgba(0, 0, 0, 0.7)); }
 }
-@keyframes reactor-spin-reverse {
-  0% { transform: rotate(360deg); }
-  100% { transform: rotate(0deg); }
-}
-@keyframes spin-slow {
-  0% { transform: rotate(0deg); }
-  100% { transform: rotate(360deg); }
-}
-@keyframes pulse-fast {
-  0%, 100% { opacity: 0.1; }
-  50% { opacity: 0.4; }
-}
-@keyframes glitch {
-  0% { transform: skew(0deg); }
-  20% { transform: skew(-2deg); }
-  40% { transform: skew(2deg); }
-  60% { transform: skew(0deg); }
-  80% { transform: skew(1deg); }
-  100% { transform: skew(0deg); }
-}
-
-/* Loader Classes Mapped */
-.animate-reactor-spin-fast { animation: reactor-spin-fast 0.8s linear infinite; }
-.animate-reactor-spin-reverse { animation: reactor-spin-reverse 1.5s linear infinite; }
-.animate-spin-slow { animation: spin-slow 4s linear infinite; }
-.animate-pulse-fast { animation: pulse-fast 1s ease-in-out infinite; }
-.animate-glitch { animation: glitch 2s infinite; }
 
 .animate-fade-in { animation: fadeIn 0.3s ease-out forwards; }
 .animate-slide-up { animation: slideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
 .animate-progress { animation: widthGrow 1s cubic-bezier(0.16, 1, 0.3, 1) forwards; }
+.animate-spin-slow { animation: spin-slow 8s linear infinite; }
 .animate-progress-indeterminate { animation: progress-indet 1.5s infinite linear; }
+.animate-pulse-hover { animation: pulse-hover 3s ease-in-out infinite; } /* Aplicando a nova classe */
+
 
 .splash-hidden { opacity: 0; pointer-events: none; }
 .modal-overlay {
