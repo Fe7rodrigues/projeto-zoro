@@ -501,6 +501,11 @@ const router = {
 
         c.innerHTML = `
             <div class="px-5 animate-fade-in pb-10">
+                <!-- Icon Main no Topo -->
+                <div class="flex justify-center mb-6 pt-2">
+                    <img src="Icon-main.png" class="w-12 h-12 drop-shadow-lg" alt="Pro Gym Icon" />
+                </div>
+
                 <!-- Header Info -->
                 <div class="mb-6 mt-2">
                     <h2 class="text-2xl font-bold text-white leading-tight tracking-tight">${utils.getFormattedDate()}</h2>
