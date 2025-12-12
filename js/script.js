@@ -7,17 +7,11 @@
 
 // --- TEMAS PROFISSIONAIS (Mapeamento: Cor -> Hex) ---
 const THEMES = {
-    // Performance = Azul
     azul:      { color: '#3b82f6', hover: '#2563eb', glow: 'rgba(59, 130, 246, 0.5)', bgSoft: 'rgba(59, 130, 246, 0.1)' },
-    // Hipertrofia = Vermelho
     vermelho:  { color: '#ef4444', hover: '#dc2626', glow: 'rgba(239, 68, 68, 0.5)', bgSoft: 'rgba(239, 68, 68, 0.1)' },
-    // Resistência = Verde
     verde:     { color: '#10b981', hover: '#059669', glow: 'rgba(16, 185, 129, 0.5)', bgSoft: 'rgba(16, 185, 129, 0.1)' },
-    // Força = Laranja
     laranja:   { color: '#f97316', hover: '#ea580c', glow: 'rgba(249, 115, 22, 0.5)', bgSoft: 'rgba(249, 115, 22, 0.1)' },
-    // Energia = Rosa
     rosa:      { color: '#FD0963', hover: '#D00750', glow: 'rgba(253, 9, 99, 0.6)', bgSoft: 'rgba(253, 9, 99, 0.15)' },
-    // Cósmico = Roxo (Tom Solicitado)
     roxo:      { color: '#8A00c4', hover: '#6d009c', glow: 'rgba(138, 0, 196, 0.6)', bgSoft: 'rgba(138, 0, 196, 0.15)' }
 };
 
@@ -73,8 +67,8 @@ const WORKOUT_PLAN = [
         { id: 'e6', name: 'Rosca Martelo', machine: 'Halteres', sets: 4, reps: '10-12', rest: 45, youtube: 'ZiasEcCg0wg' }
     ]},
     { id: 'day-f', letter: 'F', title: 'Posterior & Glúteos', focus: 'Foco em Glúteos', exercises: [
-        { id: 'f1', name: 'Cadeira Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '10-12', rest: 45, youtube: 'Y1o8iPiBI7k' },
-        { id: 'f2', name: 'Mesa Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '10-12', rest: 45, youtube: 'sZw0r26ADYA' },
+        { id: 'f1', name: 'Mesa Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '10-12', rest: 45, youtube: 'Y1o8iPiBI7k' },
+        { id: 'f2', name: 'Cadeira Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '10-12', rest: 45, youtube: 'sZw0r26ADYA' },
         { id: 'f3', name: 'Cadeira Abdutora', machine: 'Kikos Pro Station', sets: 4, reps: '12-15', rest: 45, youtube: '93LxxfV-x34' },
         { id: 'f4', name: 'Cadeira Adutora', machine: 'Kikos Pro Station', sets: 4, reps: '12-15', rest: 45, youtube: 'CwnbaDmScN0' },
         { id: 'f5', name: 'Agachamento Articulado', machine: 'Kikos Plate Load', sets: 4, reps: '8-10', rest: 90, youtube: '2LFqiG5hWL8' },
@@ -190,47 +184,105 @@ function generateRadarChart(vol) {
     </svg>`;
 }
 
-// Definição Completa das 30+ Conquistas (Badges) com níveis de dificuldade
+// NOVO: Função para Efeito de Confete
+function celebrateCompletion() {
+    for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        const size = Math.random() * 8 + 4 + 'px';
+        const left = Math.random() * 100 + 'vw';
+        const delay = Math.random() * 0.5 + 's';
+        const duration = Math.random() * 2 + 1 + 's';
+        const color = ['#3b82f6', '#ef4444', '#10b981', '#f97316', '#FD0963', '#8A00c4'][Math.floor(Math.random() * 6)];
+        
+        particle.style.cssText = `
+            position: fixed;
+            bottom: -20px;
+            left: ${left};
+            width: ${size};
+            height: ${size};
+            background-color: ${color};
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            box-shadow: 0 0 10px ${color};
+            animation: riseAndFade ${duration} ease-out ${delay} forwards;
+        `;
+        document.body.appendChild(particle);
+        setTimeout(() => particle.remove(), 3000);
+    }
+}
+
+if (!document.getElementById('confetti-style')) {
+    const style = document.createElement('style');
+    style.id = 'confetti-style';
+    style.textContent = `
+        @keyframes riseAndFade {
+            0% { transform: translateY(0) scale(1); opacity: 1; }
+            50% { opacity: 1; }
+            100% { transform: translateY(-100vh) scale(0.5); opacity: 0; }
+        }
+    `;
+    document.head.appendChild(style);
+}
+
+// --- Definição das 50 Conquistas (Badges) ---
 const BADGES = [
-    // --- NÍVEL 1: INICIANTE (Bronze) ---
-    { id: 'first_blood', icon: 'play', title: 'Primeiro Passo', desc: 'Concluiu o primeiro treino.', check: (s) => (s.xp || 0) >= 1 },
-    { id: 'bronze_user', icon: 'check-circle', title: 'Bronze', desc: 'Concluiu 10 treinos.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 10 },
-    { id: 'load_beginner', icon: 'disc', title: 'Força Inicial', desc: 'Levantou 20kg em algum exercício.', check: (s) => checkMaxLoad(s) >= 20 },
-    { id: 'note_taker', icon: 'book', title: 'Estrategista', desc: 'Criou sua primeira anotação técnica.', check: (s) => Object.keys(s.notes || {}).length >= 1 },
-    { id: 'week_warrior', icon: 'calendar', title: 'Guerreiro Semanal', desc: 'Treinou 2 vezes na semana.', check: (s) => checkWeeklyConsistency(s) >= 2 },
-    { id: 'xp_novice', icon: 'layers', title: 'Volume I', desc: '100 séries concluídas.', check: (s) => (s.xp || 0) >= 100 },
+    // FÁCEIS (1-15)
+    { id: 'start_1', icon: 'play', title: 'Iniciação', desc: '1 treino concluído.', check: (s) => Object.keys(s.workoutHistory||{}).length >= 1 },
+    { id: 'start_5', icon: 'footprints', title: 'Aquecimento', desc: '5 treinos concluídos.', check: (s) => Object.keys(s.workoutHistory||{}).length >= 5 },
+    { id: 'start_10', icon: 'check-circle', title: 'Ritmo', desc: '10 treinos concluídos.', check: (s) => Object.keys(s.workoutHistory||{}).length >= 10 },
+    { id: 'freq_2', icon: 'calendar', title: 'Frequência 2x', desc: '2 treinos na semana.', check: (s) => checkWeeklyConsistency(s) >= 2 },
+    { id: 'vol_50', icon: 'layers', title: 'Volume 50', desc: '50 séries totais.', check: (s) => (s.xp||0) >= 50 },
+    { id: 'load_20', icon: 'disc', title: 'Peso Pena', desc: 'Carga de 20kg.', check: (s) => checkMaxLoad(s) >= 20 },
+    { id: 'load_30', icon: 'disc', title: 'Peso Leve', desc: 'Carga de 30kg.', check: (s) => checkMaxLoad(s) >= 30 },
+    { id: 'load_40', icon: 'disc', title: 'Peso Base', desc: 'Carga de 40kg.', check: (s) => checkMaxLoad(s) >= 40 },
+    { id: 'cardio_1', icon: 'heart', title: 'Cardio Start', desc: '1 sessão de cardio.', check: (s) => Object.keys(s.cardioHistory||{}).length >= 1 },
+    { id: 'note_1', icon: 'book', title: 'Anotação', desc: '1 nota técnica.', check: (s) => Object.keys(s.notes||{}).length >= 1 },
+    { id: 'xp_100', icon: 'bar-chart', title: 'XP 100', desc: '100 XP (séries).', check: (s) => (s.xp||0) >= 100 },
+    { id: 'theme_user', icon: 'palette', title: 'Estilo', desc: 'Mude o tema.', check: (s) => s.settings.theme !== 'azul' },
+    { id: 'sound_user', icon: 'volume-2', title: 'Foco', desc: 'Desative o som.', check: (s) => s.settings.soundEnabled === false },
+    { id: 'load_50', icon: 'disc', title: 'Peso Médio', desc: 'Carga de 50kg.', check: (s) => checkMaxLoad(s) >= 50 },
+    { id: 'freq_3', icon: 'calendar-check', title: 'Frequência 3x', desc: '3 treinos na semana.', check: (s) => checkWeeklyConsistency(s) >= 3 },
 
-    // --- NÍVEL 2: INTERMEDIÁRIO (Prata) ---
-    { id: 'silver_user', icon: 'star', title: 'Prata', desc: 'Concluiu 50 treinos.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 50 },
-    { id: 'consistency_week', icon: 'calendar-check', title: 'Foco Semanal', desc: 'Treinou 3 vezes na semana.', check: (s) => checkWeeklyConsistency(s) >= 3 },
-    { id: 'load_intermediate', icon: 'dumbbell', title: 'Força Média', desc: 'Levantou 60kg em algum exercício.', check: (s) => checkMaxLoad(s) >= 60 },
-    { id: 'volume_hunter', icon: 'bar-chart-2', title: 'Volume II', desc: 'Acumulou 500 séries totais.', check: (s) => (s.xp || 0) >= 500 },
-    { id: 'streak_master', icon: 'repeat', title: 'Hábito Formado', desc: 'Treinou 4 vezes na semana.', check: (s) => checkWeeklyConsistency(s) >= 4 },
-    { id: 'note_master', icon: 'book-open', title: 'Analista', desc: '5 notas técnicas registradas.', check: (s) => Object.keys(s.notes || {}).length >= 5 },
-    { id: 'half_century', icon: 'shield', title: 'Meio Século', desc: 'Carga de 50kg atingida.', check: (s) => checkMaxLoad(s) >= 50 },
+    // MÉDIAS (16-35)
+    { id: 'start_25', icon: 'star', title: 'Prata', desc: '25 treinos.', check: (s) => Object.keys(s.workoutHistory||{}).length >= 25 },
+    { id: 'start_50', icon: 'award', title: 'Ouro', desc: '50 treinos.', check: (s) => Object.keys(s.workoutHistory||{}).length >= 50 },
+    { id: 'freq_4', icon: 'trending-up', title: 'Frequência 4x', desc: '4 treinos na semana.', check: (s) => checkWeeklyConsistency(s) >= 4 },
+    { id: 'freq_5', icon: 'zap', title: 'Frequência 5x', desc: '5 treinos na semana.', check: (s) => checkWeeklyConsistency(s) >= 5 },
+    { id: 'load_60', icon: 'dumbbell', title: 'Força Real', desc: 'Carga de 60kg.', check: (s) => checkMaxLoad(s) >= 60 },
+    { id: 'load_70', icon: 'dumbbell', title: 'Carga Sólida', desc: 'Carga de 70kg.', check: (s) => checkMaxLoad(s) >= 70 },
+    { id: 'load_80', icon: 'dumbbell', title: 'Atleta', desc: 'Carga de 80kg.', check: (s) => checkMaxLoad(s) >= 80 },
+    { id: 'load_90', icon: 'dumbbell', title: 'Power', desc: 'Carga de 90kg.', check: (s) => checkMaxLoad(s) >= 90 },
+    { id: 'load_100', icon: 'anchor', title: '3 Dígitos', desc: 'Carga de 100kg.', check: (s) => checkMaxLoad(s) >= 100 },
+    { id: 'vol_500', icon: 'layers', title: 'Volume 500', desc: '500 séries.', check: (s) => (s.xp||0) >= 500 },
+    { id: 'vol_1000', icon: 'layers', title: 'Volume 1k', desc: '1.000 séries.', check: (s) => (s.xp||0) >= 1000 },
+    { id: 'cardio_10', icon: 'wind', title: 'Cardio Pro', desc: '10 sessões cardio.', check: (s) => Object.keys(s.cardioHistory||{}).length >= 10 },
+    { id: 'cardio_25', icon: 'wind', title: 'Maratonista', desc: '25 sessões cardio.', check: (s) => Object.keys(s.cardioHistory||{}).length >= 25 },
+    { id: 'note_10', icon: 'file-text', title: 'Analista', desc: '10 notas.', check: (s) => Object.keys(s.notes||{}).length >= 10 },
+    { id: 'note_25', icon: 'library', title: 'Professor', desc: '25 notas.', check: (s) => Object.keys(s.notes||{}).length >= 25 },
+    { id: 'xp_2500', icon: 'activity', title: 'Máquina', desc: '2.500 XP.', check: (s) => (s.xp||0) >= 2500 },
+    { id: 'load_110', icon: 'biceps-flexed', title: 'Beast', desc: 'Carga de 110kg.', check: (s) => checkMaxLoad(s) >= 110 },
+    { id: 'load_120', icon: 'biceps-flexed', title: 'Monster', desc: 'Carga de 120kg.', check: (s) => checkMaxLoad(s) >= 120 },
+    { id: 'load_130', icon: 'hammer', title: 'Elite Str', desc: 'Carga de 130kg.', check: (s) => checkMaxLoad(s) >= 130 },
+    { id: 'start_75', icon: 'crown', title: 'Veterano', desc: '75 treinos.', check: (s) => Object.keys(s.workoutHistory||{}).length >= 75 },
 
-    // --- NÍVEL 3: AVANÇADO (Ouro) ---
-    { id: 'gold_user', icon: 'crown', title: 'Ouro', desc: 'Concluiu 100 treinos.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 100 },
-    { id: 'consistency_pro', icon: 'flame', title: 'Disciplina de Ferro', desc: 'Treinou 5 vezes na semana.', check: (s) => checkWeeklyConsistency(s) >= 5 },
-    { id: 'load_advanced', icon: 'anchor', title: 'Força Bruta', desc: 'Levantou 100kg em algum exercício.', check: (s) => checkMaxLoad(s) >= 100 },
-    { id: 'volume_master', icon: 'zap', title: 'Volume III', desc: 'Acumulou 1000 séries totais.', check: (s) => (s.xp || 0) >= 1000 },
-    { id: 'century_club', icon: 'award', title: 'Clube dos 100', desc: 'Levantou 100kg ou mais.', check: (s) => checkMaxLoad(s) >= 100 },
-    { id: 'iron_addict', icon: 'activity', title: 'Viciado em Ferro', desc: '200 treinos registrados.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 200 },
-    
-    // --- NÍVEL 4: ELITE (Diamante/Platina) ---
-    { id: 'diamond_user', icon: 'trophy', title: 'Diamante', desc: 'Concluiu 300 treinos.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 300 },
-    { id: 'consistency_god', icon: 'zap', title: 'Deus da Constância', desc: 'Treinou 6 dias na semana (No Rest).', check: (s) => checkWeeklyConsistency(s) >= 6 },
-    { id: 'load_titan', icon: 'mountain', title: 'Titã', desc: 'Levantou 140kg em algum exercício.', check: (s) => checkMaxLoad(s) >= 140 },
-    { id: 'volume_god', icon: 'layers', title: 'Volume IV', desc: 'Acumulou 2000 séries totais.', check: (s) => (s.xp || 0) >= 2000 },
-    { id: 'heavy_hitter', icon: 'hammer', title: 'Peso Pesado', desc: 'Carga de 120kg atingida.', check: (s) => checkMaxLoad(s) >= 120 },
-    { id: 'no_days_off', icon: 'calendar-days', title: 'Sem Folga', desc: '7 dias de treino na semana.', check: (s) => checkWeeklyConsistency(s) >= 7 },
-
-    // --- NÍVEL 5: LENDA (Desafios Extremos) ---
-    { id: 'legacy', icon: 'award', title: 'Lenda Viva', desc: 'Acumulou 5.000 séries totais.', check: (s) => (s.xp || 0) >= 5000 },
-    { id: 'hercules', icon: 'biceps-flexed', title: 'Hércules', desc: 'Levantou 160kg.', check: (s) => checkMaxLoad(s) >= 160 },
-    { id: 'olympus', icon: 'mountain-snow', title: 'Olimpo', desc: 'Levantou 200kg.', check: (s) => checkMaxLoad(s) >= 200 },
-    { id: 'infinity', icon: 'infinity', title: 'Infinito', desc: '10.000 séries registradas.', check: (s) => (s.xp || 0) >= 10000 },
-    { id: 'gym_rat_king', icon: 'crown', title: 'Rei da Academia', desc: '500 treinos concluídos.', check: (s) => Object.keys(s.workoutHistory || {}).length >= 500 }
+    // DIFÍCEIS / ELITE (36-50)
+    { id: 'start_100', icon: 'trophy', title: 'Centenário', desc: '100 treinos.', check: (s) => Object.keys(s.workoutHistory||{}).length >= 100 },
+    { id: 'start_200', icon: 'gem', title: 'Platina', desc: '200 treinos.', check: (s) => Object.keys(s.workoutHistory||{}).length >= 200 },
+    { id: 'start_365', icon: 'sun', title: 'Lendário', desc: '365 treinos.', check: (s) => Object.keys(s.workoutHistory||{}).length >= 365 },
+    { id: 'freq_6', icon: 'flame', title: 'Hardcore', desc: '6 treinos na semana.', check: (s) => checkWeeklyConsistency(s) >= 6 },
+    { id: 'freq_7', icon: 'zap', title: 'No Days Off', desc: '7 dias na semana.', check: (s) => checkWeeklyConsistency(s) >= 7 },
+    { id: 'load_140', icon: 'mountain', title: 'Titan', desc: 'Carga de 140kg.', check: (s) => checkMaxLoad(s) >= 140 },
+    { id: 'load_160', icon: 'mountain', title: 'Colossus', desc: 'Carga de 160kg.', check: (s) => checkMaxLoad(s) >= 160 },
+    { id: 'load_180', icon: 'swords', title: 'Olímpico', desc: 'Carga de 180kg.', check: (s) => checkMaxLoad(s) >= 180 },
+    { id: 'load_200', icon: 'shield-alert', title: 'Godlike', desc: 'Carga de 200kg.', check: (s) => checkMaxLoad(s) >= 200 },
+    { id: 'vol_5000', icon: 'bar-chart-2', title: 'Volume 5k', desc: '5.000 séries.', check: (s) => (s.xp||0) >= 5000 },
+    { id: 'vol_10000', icon: 'database', title: 'Volume 10k', desc: '10.000 séries.', check: (s) => (s.xp||0) >= 10000 },
+    { id: 'vol_25000', icon: 'server', title: 'Volume Max', desc: '25.000 séries.', check: (s) => (s.xp||0) >= 25000 },
+    { id: 'cardio_50', icon: 'bike', title: 'Iron Man', desc: '50 cardios.', check: (s) => Object.keys(s.cardioHistory||{}).length >= 50 },
+    { id: 'cardio_100', icon: 'timer', title: 'Ultra', desc: '100 cardios.', check: (s) => Object.keys(s.cardioHistory||{}).length >= 100 },
+    { id: 'note_50', icon: 'graduation-cap', title: 'Doutor', desc: '50 notas.', check: (s) => Object.keys(s.notes||{}).length >= 50 }
 ];
 
 // --- STORE (Namespace: pro_gym_app_v1) ---
@@ -745,6 +797,10 @@ const router = {
     },
 
     renderAchievements(c) {
+        const total = BADGES.length;
+        const unlockedCount = BADGES.filter(b => b.check(store.data)).length;
+        const percent = Math.round((unlockedCount / total) * 100);
+
         const badgesHtml = BADGES.map(b => {
             const unlocked = b.check(store.data);
             return `
@@ -760,7 +816,21 @@ const router = {
 
         c.innerHTML = `
         <div class="px-5 animate-fade-in pt-6">
-            <h1 class="text-2xl font-bold text-white mb-6">Conquistas</h1>
+            <div class="mb-6">
+                <h1 class="text-2xl font-bold text-white mb-2">Conquistas</h1>
+                
+                <!-- Barra de Progresso no Topo -->
+                <div class="bg-zinc-900 border border-zinc-800 rounded-xl p-4 shadow-sm">
+                    <div class="flex justify-between items-end mb-2">
+                        <span class="text-xs font-bold text-zinc-500 uppercase tracking-widest">Progresso Total</span>
+                        <span class="text-xs font-mono font-bold text-white">${unlockedCount} / ${total} Desbloqueadas</span>
+                    </div>
+                    <div class="h-2 bg-zinc-950 rounded-full overflow-hidden border border-zinc-800/50">
+                        <div class="h-full bg-[var(--theme-color)] animate-progress shadow-[0_0_8px_var(--theme-glow)]" style="--target-width: ${percent}%"></div>
+                    </div>
+                </div>
+            </div>
+
             <div class="grid grid-cols-2 gap-3">
                 ${badgesHtml}
             </div>
@@ -879,7 +949,23 @@ const actions = {
             router.renderDetail(document.getElementById('main-content'), router.currentParams);
         }
     },
-    finish() { alert('Treino Finalizado! Dados salvos.'); router.navigate('home'); }
+    finish() { 
+        // Lógica de celebração otimizada: Efeito visual -> Delay -> Navegação
+        const btn = document.getElementById('btn-finish-session');
+        if (btn) {
+            btn.innerHTML = '<i data-lucide="check" class="w-6 h-6 animate-bounce"></i> TREINO CONCLUÍDO!';
+            btn.classList.add('bg-green-600', 'scale-105');
+            safeIcons(); // Renderiza o novo ícone injetado
+        }
+        
+        celebrateCompletion();
+        
+        if(navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
+
+        setTimeout(() => {
+            router.navigate('home');
+        }, 3000);
+    }
 };
 
 // --- INIT ---
