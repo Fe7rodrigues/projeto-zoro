@@ -1,11 +1,11 @@
 /**
- * PRO GYM APP V1.1
+ * PRO GYM APP V1.2 (XP PERMANENTE & AUTO-RESET)
  * Copyright (c) 2025 Fernando Rodrigues. Todos os direitos reservados.
  * Descrição: Sistema profissional de gestão de treinos com RPE e Radar Chart.
- * Theme: Clean Dark & Technical
+ * Update: Lógica de XP cumulativo e reset semanal automático.
  */
 
-// --- TEMAS PROFISSIONAIS (Mapeamento: Cor -> Hex) ---
+// --- TEMAS PROFISSIONAIS ---
 const THEMES = {
     azul:      { color: '#3b82f6', hover: '#2563eb', glow: 'rgba(59, 130, 246, 0.5)', bgSoft: 'rgba(59, 130, 246, 0.1)' },
     vermelho:  { color: '#ef4444', hover: '#dc2626', glow: 'rgba(239, 68, 68, 0.5)', bgSoft: 'rgba(239, 68, 68, 0.1)' },
@@ -22,7 +22,9 @@ const RANKS = [
     { name: "Intermediário", minXP: 200 }, 
     { name: "Avançado", minXP: 500 },
     { name: "Elite", minXP: 1000 }, 
-    { name: "Pro", minXP: 2000 }
+    { name: "Pro", minXP: 2000 },
+    { name: "Lenda", minXP: 5000 },
+    { name: "Mestre", minXP: 10000 }
 ];
 
 // --- PLANO DE TREINO (A-F) ---
@@ -77,52 +79,198 @@ const WORKOUT_PLAN = [
 ];
 
 // --- HELPERS ---
-function checkWeeklyConsistency(s) {
-    const today = new Date();
-    let count = 0;
-    const history = s.workoutHistory || {};
-    for(let i=0; i<7; i++) {
-        const d = new Date(today); d.setDate(today.getDate()-i);
-        if(history[d.toISOString().split('T')[0]]) count++;
-    }
-    return count;
-}
-
-function calculateWeeklyVolume(s) {
-    const volume = { 
-        'Peitoral': 0, 'Costas': 0, 'Pernas': 0, 
-        'Ombros': 0, 'Braços': 0
-    };
+const utils = {
+    getTodayDate: () => new Date().toISOString().split('T')[0],
     
-    if (s.completedSets) {
-        Object.keys(s.completedSets).forEach(key => {
-            if(s.completedSets[key]) {
-                const exId = key.split('-')[0];
-                const groupChar = exId.charAt(0);
+    // Calcula a "assinatura" da semana atual (baseado em Segunda-feira)
+    getCurrentWeekSignature: () => {
+        const d = new Date();
+        const day = d.getDay();
+        // Ajusta para a segunda-feira da semana atual (Monday = 1)
+        // Se for Domingo (0), volta 6 dias. Se for outro dia, volta (day - 1).
+        const diff = d.getDate() - day + (day === 0 ? -6 : 1);
+        const monday = new Date(d.setDate(diff));
+        return monday.toDateString(); // Retorna ex: "Mon Dec 16 2025"
+    },
+
+    getFormattedDate: () => {
+        const date = new Date();
+        const options = { weekday: 'long', day: 'numeric', month: 'long' };
+        try {
+            const str = date.toLocaleDateString('pt-BR', options);
+            return str.charAt(0).toUpperCase() + str.slice(1);
+        } catch(e) { return "Hoje"; }
+    },
+
+    getWeekDays: () => {
+        const d = []; 
+        const today = new Date();
+        const dayOfWeek = today.getDay(); 
+        const diff = today.getDate() - dayOfWeek + (dayOfWeek == 0 ? -6 : 1); 
+        const monday = new Date(today.setDate(diff));
+
+        for(let i=0; i<7; i++) {
+            const date = new Date(monday); 
+            date.setDate(monday.getDate() + i);
+            d.push({ 
+                obj: date, 
+                iso: date.toISOString().split('T')[0], 
+                lbl: date.toLocaleDateString('pt-BR', {weekday:'narrow'}).toUpperCase() 
+            });
+        }
+        return d;
+    },
+    
+    getRank(xp) { return [...RANKS].reverse().find(r => (xp || 0) >= r.minXP) || RANKS[0]; },
+    getNextRank(xp) { return RANKS.find(r => r.minXP > (xp || 0)); },
+    
+    // Comparativo de pesos
+    getDelta(exId) {
+        const curr = parseFloat(store.data.weights[exId]) || 0;
+        const prev = parseFloat(store.data.prevWeights[exId]) || 0;
+        if (prev === 0 || curr === 0) return null;
+        
+        const diff = curr - prev;
+        const roundedDiff = Math.round(diff * 10) / 10;
+        if (diff === 0) return `<span class="delta-tag delta-neu">▬</span>`;
+        if (diff > 0) return `<span class="delta-tag delta-pos">▲ +${roundedDiff}kg</span>`;
+        return `<span class="delta-tag delta-neg">▼ ${roundedDiff}kg</span>`;
+    },
+
+    getHeatmapData() {
+        const data = [];
+        const today = new Date();
+        const history = store.data.workoutHistory || {}; 
+        
+        for(let i=100; i>=0; i--) {
+            const d = new Date(today); d.setDate(today.getDate() - i);
+            const iso = d.toISOString().split('T')[0];
+            data.push({ date: d, iso: iso, value: history[iso] ? 3 : 0 });
+        }
+        return data;
+    },
+    
+    calculate1RM(w, r) { return Math.round(w * (1 + r/30)); },
+    calculatePlates(target) {
+        let rem = (target - 20) / 2; if(rem <= 0) return [];
+        const plates = [25, 20, 15, 10, 5, 2.5, 1.25], res = [];
+        for(let p of plates) { while(rem >= p) { res.push(p); rem -= p; } }
+        return res;
+    },
+
+    checkWeeklyConsistency(s) {
+        const today = new Date();
+        let count = 0;
+        const history = s.workoutHistory || {};
+        for(let i=0; i<7; i++) {
+            const d = new Date(today); d.setDate(today.getDate()-i);
+            if(history[d.toISOString().split('T')[0]]) count++;
+        }
+        return count;
+    },
+
+    calculateWeeklyVolume(s) {
+        const volume = { 'Peitoral': 0, 'Costas': 0, 'Pernas': 0, 'Ombros': 0, 'Braços': 0 };
+        // Calcula baseado nos sets marcados na semana atual
+        if (s.completedSets) {
+            Object.keys(s.completedSets).forEach(key => {
+                if(s.completedSets[key]) {
+                    const exId = key.split('-')[0];
+                    const groupChar = exId.charAt(0);
+                    if (groupChar === 'a') volume['Peitoral']++;
+                    else if (groupChar === 'b') volume['Costas']++;
+                    else if (groupChar === 'c' || groupChar === 'f') volume['Pernas']++;
+                    else if (groupChar === 'd') volume['Ombros']++;
+                    else if (groupChar === 'e') volume['Braços']++;
+                }
+            });
+        }
+        return volume;
+    },
+
+    checkMaxLoad(s) {
+        let max = 0;
+        if (s.weights) {
+            Object.values(s.weights).forEach(w => { 
+                const val = parseFloat(w);
+                if(!isNaN(val) && val > max) max = val; 
+            });
+        }
+        return max;
+    }
+};
+
+// --- STORE (Namespace: pro_gym_app_v1) ---
+const store = {
+    data: { 
+        completedSets: {}, weights: {}, rpe: {}, prevWeights: {}, notes: {}, 
+        cardioHistory: {}, workoutHistory: {}, 
+        settings: { theme: 'azul', soundEnabled: true }, 
+        xp: 0, 
+        visibleVideos: {},
+        lastResetWeek: null // Rastreia a semana para o reset automático
+    },
+    load() {
+        const saved = localStorage.getItem('pro_gym_app_v1');
+        if (saved) { 
+            try {
+                const parsed = JSON.parse(saved);
+                if (parsed && typeof parsed === 'object') {
+                    this.data = { ...this.data, ...parsed };
+                }
                 
-                if (groupChar === 'a') volume['Peitoral']++;
-                else if (groupChar === 'b') volume['Costas']++;
-                else if (groupChar === 'c' || groupChar === 'f') volume['Pernas']++;
-                else if (groupChar === 'd') volume['Ombros']++;
-                else if (groupChar === 'e') volume['Braços']++;
+                // Validações de Integridade
+                if (!this.data.visibleVideos) this.data.visibleVideos = {}; 
+                if (!this.data.settings) this.data.settings = { theme: 'azul', soundEnabled: true };
+                if (typeof this.data.xp !== 'number') this.data.xp = 0;
+                
+            } catch (e) {
+                console.error("Erro no load (Reset):", e);
             }
-        });
-    }
-    return volume;
-}
+        }
 
-function checkMaxLoad(s) {
-    let max = 0;
-    if (s.weights) {
-        Object.values(s.weights).forEach(w => { 
-            const val = parseFloat(w);
-            if(!isNaN(val) && val > max) max = val; 
-        });
-    }
-    return max;
-}
+        // --- LÓGICA DE RESET SEMANAL (SEGUNDA-FEIRA) ---
+        const currentWeekSignature = utils.getCurrentWeekSignature();
+        if (this.data.lastResetWeek !== currentWeekSignature) {
+            console.log("Nova semana detectada. Resetando status dos treinos...");
+            // Limpa apenas os "checks" visuais, MANTENDO o XP
+            this.data.completedSets = {}; 
+            this.data.lastResetWeek = currentWeekSignature; 
+            this.save();
+        }
 
-// Helper para gerar Gráfico de Radar SVG
+        themeManager.apply(this.data.settings.theme || 'azul');
+    },
+    save() {
+        // NÃO sobrescrevemos mais o XP com completedSets.length.
+        // O XP agora é cumulativo e persistente.
+        const { visibleVideos, ...dataToSave } = this.data;
+        localStorage.setItem('pro_gym_app_v1', JSON.stringify(dataToSave));
+    }
+};
+
+const themeManager = {
+    apply(key) {
+        const t = THEMES[key] || THEMES['azul'];
+        const r = document.documentElement.style;
+        if(t) {
+            r.setProperty('--theme-color', t.color);
+            r.setProperty('--theme-hover', t.hover);
+            r.setProperty('--theme-glow', t.glow);
+            r.setProperty('--theme-bg-soft', t.bgSoft);
+        }
+    },
+    setTheme(key) {
+        store.data.settings.theme = key; 
+        this.apply(key); 
+        store.save();
+        if (document.getElementById('main-header') && document.getElementById('main-header').classList.contains('hidden')) {
+            router.renderHome(document.getElementById('main-content'));
+        }
+    }
+};
+
+// --- CHART GENERATOR ---
 function generateRadarChart(vol) {
     const categories = ['Peitoral', 'Costas', 'Pernas', 'Ombros', 'Braços'];
     const maxVal = 24; 
@@ -184,77 +332,35 @@ function generateRadarChart(vol) {
     </svg>`;
 }
 
-// NOVO: Função para Efeito de Confete
-function celebrateCompletion() {
-    for (let i = 0; i < 50; i++) {
-        const particle = document.createElement('div');
-        const size = Math.random() * 8 + 4 + 'px';
-        const left = Math.random() * 100 + 'vw';
-        const delay = Math.random() * 0.5 + 's';
-        const duration = Math.random() * 2 + 1 + 's';
-        const color = ['#3b82f6', '#ef4444', '#10b981', '#f97316', '#FD0963', '#8A00c4'][Math.floor(Math.random() * 6)];
-        
-        particle.style.cssText = `
-            position: fixed;
-            bottom: -20px;
-            left: ${left};
-            width: ${size};
-            height: ${size};
-            background-color: ${color};
-            border-radius: 50%;
-            z-index: 9999;
-            pointer-events: none;
-            opacity: 0;
-            box-shadow: 0 0 10px ${color};
-            animation: riseAndFade ${duration} ease-out ${delay} forwards;
-        `;
-        document.body.appendChild(particle);
-        setTimeout(() => particle.remove(), 3000);
-    }
-}
-
-if (!document.getElementById('confetti-style')) {
-    const style = document.createElement('style');
-    style.id = 'confetti-style';
-    style.textContent = `
-        @keyframes riseAndFade {
-            0% { transform: translateY(0) scale(1); opacity: 1; }
-            50% { opacity: 1; }
-            100% { transform: translateY(-100vh) scale(0.5); opacity: 0; }
-        }
-    `;
-    document.head.appendChild(style);
-}
-
-// --- Definição das 50 Conquistas (Badges) ---
+// --- CONQUISTAS ---
 const BADGES = [
     // FÁCEIS (1-15)
     { id: 'start_1', icon: 'play', title: 'Iniciação', desc: '1 treino concluído.', check: (s) => Object.keys(s.workoutHistory||{}).length >= 1 },
     { id: 'start_5', icon: 'footprints', title: 'Aquecimento', desc: '5 treinos concluídos.', check: (s) => Object.keys(s.workoutHistory||{}).length >= 5 },
     { id: 'start_10', icon: 'check-circle', title: 'Ritmo', desc: '10 treinos concluídos.', check: (s) => Object.keys(s.workoutHistory||{}).length >= 10 },
-    { id: 'freq_2', icon: 'calendar', title: 'Frequência 2x', desc: '2 treinos na semana.', check: (s) => checkWeeklyConsistency(s) >= 2 },
+    { id: 'freq_2', icon: 'calendar', title: 'Frequência 2x', desc: '2 treinos na semana.', check: (s) => utils.checkWeeklyConsistency(s) >= 2 },
     { id: 'vol_50', icon: 'layers', title: 'Volume 50', desc: '50 séries totais.', check: (s) => (s.xp||0) >= 50 },
-    { id: 'load_20', icon: 'disc', title: 'Peso Pena', desc: 'Carga de 20kg.', check: (s) => checkMaxLoad(s) >= 20 },
-    { id: 'load_30', icon: 'disc', title: 'Peso Leve', desc: 'Carga de 30kg.', check: (s) => checkMaxLoad(s) >= 30 },
-    { id: 'load_40', icon: 'disc', title: 'Peso Base', desc: 'Carga de 40kg.', check: (s) => checkMaxLoad(s) >= 40 },
+    { id: 'load_20', icon: 'disc', title: 'Peso Pena', desc: 'Carga de 20kg.', check: (s) => utils.checkMaxLoad(s) >= 20 },
+    { id: 'load_30', icon: 'disc', title: 'Peso Leve', desc: 'Carga de 30kg.', check: (s) => utils.checkMaxLoad(s) >= 30 },
+    { id: 'load_40', icon: 'disc', title: 'Peso Base', desc: 'Carga de 40kg.', check: (s) => utils.checkMaxLoad(s) >= 40 },
     { id: 'cardio_1', icon: 'heart', title: 'Cardio Start', desc: '1 sessão de cardio.', check: (s) => Object.keys(s.cardioHistory||{}).length >= 1 },
     { id: 'note_1', icon: 'book', title: 'Anotação', desc: '1 nota técnica.', check: (s) => Object.keys(s.notes||{}).length >= 1 },
     { id: 'xp_100', icon: 'bar-chart', title: 'XP 100', desc: '100 XP (séries).', check: (s) => (s.xp||0) >= 100 },
     { id: 'theme_user', icon: 'palette', title: 'Estilo', desc: 'Mude o tema.', check: (s) => s.settings.theme !== 'azul' },
     { id: 'sound_user', icon: 'volume-2', title: 'Foco', desc: 'Desative o som.', check: (s) => s.settings.soundEnabled === false },
-    { id: 'load_50', icon: 'disc', title: 'Peso Médio', desc: 'Carga de 50kg.', check: (s) => checkMaxLoad(s) >= 50 },
-    { id: 'freq_3', icon: 'calendar-check', title: 'Frequência 3x', desc: '3 treinos na semana.', check: (s) => checkWeeklyConsistency(s) >= 3 },
+    { id: 'load_50', icon: 'disc', title: 'Peso Médio', desc: 'Carga de 50kg.', check: (s) => utils.checkMaxLoad(s) >= 50 },
+    { id: 'freq_3', icon: 'calendar-check', title: 'Frequência 3x', desc: '3 treinos na semana.', check: (s) => utils.checkWeeklyConsistency(s) >= 3 },
 
     // MÉDIAS (16-35)
     { id: 'start_25', icon: 'star', title: 'Prata', desc: '25 treinos.', check: (s) => Object.keys(s.workoutHistory||{}).length >= 25 },
     { id: 'start_50', icon: 'award', title: 'Ouro', desc: '50 treinos.', check: (s) => Object.keys(s.workoutHistory||{}).length >= 50 },
-    { id: 'freq_4', icon: 'trending-up', title: 'Frequência 4x', desc: '4 treinos na semana.', check: (s) => checkWeeklyConsistency(s) >= 4 },
-    { id: 'freq_5', icon: 'zap', title: 'Frequência 5x', desc: '5 treinos na semana.', check: (s) => checkWeeklyConsistency(s) >= 5 },
-    { id: 'load_60', icon: 'dumbbell', title: 'Força Real', desc: 'Carga de 60kg.', check: (s) => checkMaxLoad(s) >= 60 },
-    { id: 'load_70', icon: 'dumbbell', title: 'Carga Sólida', desc: 'Carga de 70kg.', check: (s) => checkMaxLoad(s) >= 70 },
-    { id: 'load_80', icon: 'dumbbell', title: 'Atleta', desc: 'Carga de 80kg.', check: (s) => checkMaxLoad(s) >= 80 },
-    { id: 'load_90', icon: 'dumbbell', title: 'Power', desc: 'Carga de 90kg.', check: (s) => checkMaxLoad(s) >= 90 },
-    { id: 'load_100', icon: 'anchor', title: '3 Dígitos', desc: 'Carga de 100kg.', check: (s) => checkMaxLoad(s) >= 100 },
+    { id: 'freq_4', icon: 'trending-up', title: 'Frequência 4x', desc: '4 treinos na semana.', check: (s) => utils.checkWeeklyConsistency(s) >= 4 },
+    { id: 'freq_5', icon: 'zap', title: 'Frequência 5x', desc: '5 treinos na semana.', check: (s) => utils.checkWeeklyConsistency(s) >= 5 },
+    { id: 'load_60', icon: 'dumbbell', title: 'Força Real', desc: 'Carga de 60kg.', check: (s) => utils.checkMaxLoad(s) >= 60 },
+    { id: 'load_70', icon: 'dumbbell', title: 'Carga Sólida', desc: 'Carga de 70kg.', check: (s) => utils.checkMaxLoad(s) >= 70 },
+    { id: 'load_80', icon: 'dumbbell', title: 'Atleta', desc: 'Carga de 80kg.', check: (s) => utils.checkMaxLoad(s) >= 80 },
+    { id: 'load_90', icon: 'dumbbell', title: 'Power', desc: 'Carga de 90kg.', check: (s) => utils.checkMaxLoad(s) >= 90 },
+    { id: 'load_100', icon: 'anchor', title: '3 Dígitos', desc: 'Carga de 100kg.', check: (s) => utils.checkMaxLoad(s) >= 100 },
     { id: 'vol_500', icon: 'layers', title: 'Volume 500', desc: '500 séries.', check: (s) => (s.xp||0) >= 500 },
     { id: 'vol_1000', icon: 'layers', title: 'Volume 1k', desc: '1.000 séries.', check: (s) => (s.xp||0) >= 1000 },
     { id: 'cardio_10', icon: 'wind', title: 'Cardio Pro', desc: '10 sessões cardio.', check: (s) => Object.keys(s.cardioHistory||{}).length >= 10 },
@@ -262,21 +368,21 @@ const BADGES = [
     { id: 'note_10', icon: 'file-text', title: 'Analista', desc: '10 notas.', check: (s) => Object.keys(s.notes||{}).length >= 10 },
     { id: 'note_25', icon: 'library', title: 'Professor', desc: '25 notas.', check: (s) => Object.keys(s.notes||{}).length >= 25 },
     { id: 'xp_2500', icon: 'activity', title: 'Máquina', desc: '2.500 XP.', check: (s) => (s.xp||0) >= 2500 },
-    { id: 'load_110', icon: 'biceps-flexed', title: 'Beast', desc: 'Carga de 110kg.', check: (s) => checkMaxLoad(s) >= 110 },
-    { id: 'load_120', icon: 'biceps-flexed', title: 'Monster', desc: 'Carga de 120kg.', check: (s) => checkMaxLoad(s) >= 120 },
-    { id: 'load_130', icon: 'hammer', title: 'Elite Str', desc: 'Carga de 130kg.', check: (s) => checkMaxLoad(s) >= 130 },
+    { id: 'load_110', icon: 'biceps-flexed', title: 'Beast', desc: 'Carga de 110kg.', check: (s) => utils.checkMaxLoad(s) >= 110 },
+    { id: 'load_120', icon: 'biceps-flexed', title: 'Monster', desc: 'Carga de 120kg.', check: (s) => utils.checkMaxLoad(s) >= 120 },
+    { id: 'load_130', icon: 'hammer', title: 'Elite Str', desc: 'Carga de 130kg.', check: (s) => utils.checkMaxLoad(s) >= 130 },
     { id: 'start_75', icon: 'crown', title: 'Veterano', desc: '75 treinos.', check: (s) => Object.keys(s.workoutHistory||{}).length >= 75 },
 
     // DIFÍCEIS / ELITE (36-50)
     { id: 'start_100', icon: 'trophy', title: 'Centenário', desc: '100 treinos.', check: (s) => Object.keys(s.workoutHistory||{}).length >= 100 },
     { id: 'start_200', icon: 'gem', title: 'Platina', desc: '200 treinos.', check: (s) => Object.keys(s.workoutHistory||{}).length >= 200 },
     { id: 'start_365', icon: 'sun', title: 'Lendário', desc: '365 treinos.', check: (s) => Object.keys(s.workoutHistory||{}).length >= 365 },
-    { id: 'freq_6', icon: 'flame', title: 'Hardcore', desc: '6 treinos na semana.', check: (s) => checkWeeklyConsistency(s) >= 6 },
-    { id: 'freq_7', icon: 'zap', title: 'No Days Off', desc: '7 dias na semana.', check: (s) => checkWeeklyConsistency(s) >= 7 },
-    { id: 'load_140', icon: 'mountain', title: 'Titan', desc: 'Carga de 140kg.', check: (s) => checkMaxLoad(s) >= 140 },
-    { id: 'load_160', icon: 'mountain', title: 'Colossus', desc: 'Carga de 160kg.', check: (s) => checkMaxLoad(s) >= 160 },
-    { id: 'load_180', icon: 'swords', title: 'Olímpico', desc: 'Carga de 180kg.', check: (s) => checkMaxLoad(s) >= 180 },
-    { id: 'load_200', icon: 'shield-alert', title: 'Godlike', desc: 'Carga de 200kg.', check: (s) => checkMaxLoad(s) >= 200 },
+    { id: 'freq_6', icon: 'flame', title: 'Hardcore', desc: '6 treinos na semana.', check: (s) => utils.checkWeeklyConsistency(s) >= 6 },
+    { id: 'freq_7', icon: 'zap', title: 'No Days Off', desc: '7 dias na semana.', check: (s) => utils.checkWeeklyConsistency(s) >= 7 },
+    { id: 'load_140', icon: 'mountain', title: 'Titan', desc: 'Carga de 140kg.', check: (s) => utils.checkMaxLoad(s) >= 140 },
+    { id: 'load_160', icon: 'mountain', title: 'Colossus', desc: 'Carga de 160kg.', check: (s) => utils.checkMaxLoad(s) >= 160 },
+    { id: 'load_180', icon: 'swords', title: 'Olímpico', desc: 'Carga de 180kg.', check: (s) => utils.checkMaxLoad(s) >= 180 },
+    { id: 'load_200', icon: 'shield-alert', title: 'Godlike', desc: 'Carga de 200kg.', check: (s) => utils.checkMaxLoad(s) >= 200 },
     { id: 'vol_5000', icon: 'bar-chart-2', title: 'Volume 5k', desc: '5.000 séries.', check: (s) => (s.xp||0) >= 5000 },
     { id: 'vol_10000', icon: 'database', title: 'Volume 10k', desc: '10.000 séries.', check: (s) => (s.xp||0) >= 10000 },
     { id: 'vol_25000', icon: 'server', title: 'Volume Max', desc: '25.000 séries.', check: (s) => (s.xp||0) >= 25000 },
@@ -284,135 +390,6 @@ const BADGES = [
     { id: 'cardio_100', icon: 'timer', title: 'Ultra', desc: '100 cardios.', check: (s) => Object.keys(s.cardioHistory||{}).length >= 100 },
     { id: 'note_50', icon: 'graduation-cap', title: 'Doutor', desc: '50 notas.', check: (s) => Object.keys(s.notes||{}).length >= 50 }
 ];
-
-// --- STORE (Namespace: pro_gym_app_v1) ---
-const store = {
-    data: { 
-        completedSets: {}, weights: {}, rpe: {}, prevWeights: {}, notes: {}, cardioHistory: {}, workoutHistory: {}, 
-        settings: { theme: 'azul', soundEnabled: true }, 
-        xp: 0, visibleVideos: {} 
-    },
-    load() {
-        const saved = localStorage.getItem('pro_gym_app_v1');
-        if (saved) { 
-            try {
-                const parsed = JSON.parse(saved);
-                if (parsed && typeof parsed === 'object') {
-                    this.data = { ...this.data, ...parsed };
-                }
-                
-                // Validações de Integridade
-                if (!this.data.visibleVideos) this.data.visibleVideos = {}; 
-                if (!this.data.settings) this.data.settings = { theme: 'azul', soundEnabled: true };
-                if (!this.data.prevWeights) this.data.prevWeights = {};
-                if (!this.data.weights) this.data.weights = {};
-                if (!this.data.rpe) this.data.rpe = {}; 
-                if (!this.data.workoutHistory) this.data.workoutHistory = {};
-                if (!this.data.completedSets || Array.isArray(this.data.completedSets)) this.data.completedSets = {};
-                if (typeof this.data.xp !== 'number') this.data.xp = 0;
-                
-            } catch (e) {
-                console.error("Erro no load (Reset):", e);
-            }
-        }
-        themeManager.apply(this.data.settings.theme || 'azul');
-    },
-    save() {
-        const completedCount = Object.values(this.data.completedSets || {}).filter(Boolean).length;
-        this.data.xp = completedCount;
-        const { visibleVideos, ...dataToSave } = this.data;
-        localStorage.setItem('pro_gym_app_v1', JSON.stringify(dataToSave));
-    }
-};
-
-const themeManager = {
-    apply(key) {
-        const t = THEMES[key] || THEMES['azul'];
-        const r = document.documentElement.style;
-        if(t) {
-            r.setProperty('--theme-color', t.color);
-            r.setProperty('--theme-hover', t.hover);
-            r.setProperty('--theme-glow', t.glow);
-            r.setProperty('--theme-bg-soft', t.bgSoft);
-        }
-    },
-    setTheme(key) {
-        store.data.settings.theme = key; 
-        this.apply(key); 
-        store.save();
-        if (document.getElementById('main-header') && document.getElementById('main-header').classList.contains('hidden')) {
-            router.renderHome(document.getElementById('main-content'));
-        }
-    }
-};
-
-const utils = {
-    getTodayDate: () => new Date().toISOString().split('T')[0],
-    
-    getFormattedDate: () => {
-        const date = new Date();
-        const options = { weekday: 'long', day: 'numeric', month: 'long' };
-        try {
-            const str = date.toLocaleDateString('pt-BR', options);
-            return str.charAt(0).toUpperCase() + str.slice(1);
-        } catch(e) { return "Hoje"; }
-    },
-
-    getWeekDays: () => {
-        const d = []; 
-        const today = new Date();
-        const dayOfWeek = today.getDay(); 
-        const diff = today.getDate() - dayOfWeek + (dayOfWeek == 0 ? -6 : 1); 
-        const monday = new Date(today.setDate(diff));
-
-        for(let i=0; i<7; i++) {
-            const date = new Date(monday); 
-            date.setDate(monday.getDate() + i);
-            d.push({ 
-                obj: date, 
-                iso: date.toISOString().split('T')[0], 
-                lbl: date.toLocaleDateString('pt-BR', {weekday:'narrow'}).toUpperCase() 
-            });
-        }
-        return d;
-    },
-    
-    getRank(xp) { return [...RANKS].reverse().find(r => (xp || 0) >= r.minXP) || RANKS[0]; },
-    getNextRank(xp) { return RANKS.find(r => r.minXP > (xp || 0)); },
-    
-    getDelta(exId) {
-        const curr = parseFloat(store.data.weights[exId]) || 0;
-        const prev = parseFloat(store.data.prevWeights[exId]) || 0;
-        if (prev === 0 || curr === 0) return null;
-        
-        const diff = curr - prev;
-        const roundedDiff = Math.round(diff * 10) / 10;
-        if (diff === 0) return `<span class="delta-tag delta-neu">▬</span>`;
-        if (diff > 0) return `<span class="delta-tag delta-pos">▲ +${roundedDiff}kg</span>`;
-        return `<span class="delta-tag delta-neg">▼ ${roundedDiff}kg</span>`;
-    },
-
-    getHeatmapData() {
-        const data = [];
-        const today = new Date();
-        const history = store.data.workoutHistory || {}; 
-        
-        for(let i=100; i>=0; i--) {
-            const d = new Date(today); d.setDate(today.getDate() - i);
-            const iso = d.toISOString().split('T')[0];
-            data.push({ date: d, iso: iso, value: history[iso] ? 3 : 0 });
-        }
-        return data;
-    },
-    
-    calculate1RM(w, r) { return Math.round(w * (1 + r/30)); },
-    calculatePlates(target) {
-        let rem = (target - 20) / 2; if(rem <= 0) return [];
-        const plates = [25, 20, 15, 10, 5, 2.5, 1.25], res = [];
-        for(let p of plates) { while(rem >= p) { res.push(p); rem -= p; } }
-        return res;
-    }
-};
 
 // --- MODULES ---
 const safeIcons = () => { if(typeof lucide !== 'undefined') lucide.createIcons(); };
@@ -553,7 +530,7 @@ const router = {
                 <!-- Icon Main no Topo com Neon -->
                 <div class="flex justify-center mb-6 pt-2 relative">
                     <div class="absolute w-16 h-16 bg-[var(--theme-color)] rounded-full blur-[20px] opacity-40 animate-pulse"></div>
-                    <img src="assets/img/icon-main.png" class="w-16 h-16 drop-shadow-lg animate-pulse-hover relative z-10" alt="Pro Gym Icon" />
+                    <img src="assets/img/icon-main.png" class="w-16 h-16 drop-shadow-lg animate-pulse-hover relative z-10" alt="Pro Gym Icon" onerror="this.style.display='none'"/>
                 </div>
 
                 <!-- Header Info -->
@@ -747,7 +724,7 @@ const router = {
             return `<div class="heatmap-cell ${lvl}" title="${d.date.toLocaleDateString()}"></div>`;
         }).join('');
 
-        const vol = calculateWeeklyVolume(store.data);
+        const vol = utils.calculateWeeklyVolume(store.data);
         const radarSvg = generateRadarChart(vol);
 
         c.innerHTML = `
@@ -759,7 +736,7 @@ const router = {
                 <div class="flex justify-between items-start mb-2 relative z-10">
                     <div>
                         <h3 class="text-xs font-bold text-white uppercase tracking-widest">Equilíbrio Físico</h3>
-                        <p class="text-[9px] text-zinc-500 font-mono">Análise de volume por grupo</p>
+                        <p class="text-[9px] text-zinc-500 font-mono">Análise de volume da semana atual</p>
                     </div>
                     <div class="p-1.5 bg-zinc-800 rounded text-[var(--theme-color)]"><i data-lucide="radar" class="w-4 h-4"></i></div>
                 </div>
@@ -769,7 +746,7 @@ const router = {
                 </div>
                 
                 <div class="text-center">
-                    <p class="text-[9px] text-zinc-600 mt-1">*O gráfico expande conforme você treina.</p>
+                    <p class="text-[9px] text-zinc-600 mt-1">*O gráfico reinicia semanalmente.</p>
                 </div>
             </div>
 
@@ -787,7 +764,7 @@ const router = {
                     <span class="text-3xl font-bold text-white font-mono tracking-tighter">${Object.keys(store.data.workoutHistory || {}).length}</span>
                 </div>
                 <div class="bg-zinc-900 border border-zinc-800 rounded-2xl p-5">
-                    <span class="text-xs text-zinc-500 block mb-1 font-bold uppercase">Volume Total (XP)</span>
+                    <span class="text-xs text-zinc-500 block mb-1 font-bold uppercase">XP Total</span>
                     <span class="text-3xl font-bold text-[var(--theme-color)] font-mono tracking-tighter">${store.data.xp}</span>
                 </div>
             </div>
@@ -899,6 +876,7 @@ const actions = {
         store.data.completedSets[k] = d;
         const animId = d ? k : null;
         
+        // XP incremental: Ganha ao fazer, perde ao desfazer (mas só manualmente)
         if(d) {
             if(navigator.vibrate) navigator.vibrate(50);
             store.data.xp = (store.data.xp || 0) + 1;
@@ -907,6 +885,7 @@ const actions = {
             if (!store.data.workoutHistory) store.data.workoutHistory = {};
             store.data.workoutHistory[today] = (store.data.workoutHistory[today] || 0) + 1; 
         } else {
+            // Se desmarcar manualmente, perde o XP daquela série
             store.data.xp = Math.max(0, (store.data.xp || 0) - 1);
         }
         
@@ -940,22 +919,27 @@ const actions = {
         router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
     reset(id) {
-        if(!confirm('Reiniciar esta sessão de treino?')) return;
-        const w = WORKOUT_PLAN.find(x => x.id === id); let rm = 0;
+        if(!confirm('Reiniciar esta sessão? (Seu XP será mantido)')) return;
+        const w = WORKOUT_PLAN.find(x => x.id === id); 
         if(w && store.data.completedSets) {
-            w.exercises.forEach(ex => { for(let i=0;i<4;i++) if(store.data.completedSets[`${ex.id}-${i}`]) { rm++; delete store.data.completedSets[`${ex.id}-${i}`]; } });
-            store.data.xp = Math.max(0, (store.data.xp || 0) - rm); 
+            w.exercises.forEach(ex => { 
+                for(let i=0;i<4;i++) {
+                    // Apenas deleta a marcação visual, NÃO subtrai XP
+                    delete store.data.completedSets[`${ex.id}-${i}`]; 
+                }
+            });
+            // O XP permanece intacto aqui
             store.save(); 
             router.renderDetail(document.getElementById('main-content'), router.currentParams);
         }
     },
     finish() { 
-        // Lógica de celebração otimizada: Efeito visual -> Delay -> Navegação
+        // Efeito visual de confete
         const btn = document.getElementById('btn-finish-session');
         if (btn) {
             btn.innerHTML = '<i data-lucide="check" class="w-6 h-6 animate-bounce"></i> TREINO CONCLUÍDO!';
             btn.classList.add('bg-green-600', 'scale-105');
-            safeIcons(); // Renderiza o novo ícone injetado
+            safeIcons();
         }
         
         celebrateCompletion();
@@ -968,16 +952,58 @@ const actions = {
     }
 };
 
-// --- INIT ---
+// Funções de Efeito Visual (Confete)
+function celebrateCompletion() {
+    for (let i = 0; i < 50; i++) {
+        const particle = document.createElement('div');
+        const size = Math.random() * 8 + 4 + 'px';
+        const left = Math.random() * 100 + 'vw';
+        const delay = Math.random() * 0.5 + 's';
+        const duration = Math.random() * 2 + 1 + 's';
+        const color = ['#3b82f6', '#ef4444', '#10b981', '#f97316', '#FD0963', '#8A00c4'][Math.floor(Math.random() * 6)];
+        
+        particle.style.cssText = `
+            position: fixed;
+            bottom: -20px;
+            left: ${left};
+            width: ${size};
+            height: ${size};
+            background-color: ${color};
+            border-radius: 50%;
+            z-index: 9999;
+            pointer-events: none;
+            opacity: 0;
+            box-shadow: 0 0 10px ${color};
+            animation: riseAndFade ${duration} ease-out ${delay} forwards;
+        `;
+        document.body.appendChild(particle);
+        setTimeout(() => particle.remove(), 3000);
+    }
+}
+
+// Inicialização
 function initApp() {
     const splash = document.getElementById('splash-screen');
-    // Splash screen mais rápida para sensação de performance (1.5s)
     setTimeout(() => {
         if (splash) {
             splash.classList.add('splash-hidden');
             setTimeout(() => { splash.style.display = 'none'; }, 500);
         }
     }, 1500);
+    
+    // Injeta CSS do confete se não existir
+    if (!document.getElementById('confetti-style')) {
+        const style = document.createElement('style');
+        style.id = 'confetti-style';
+        style.textContent = `
+            @keyframes riseAndFade {
+                0% { transform: translateY(0) scale(1); opacity: 1; }
+                50% { opacity: 1; }
+                100% { transform: translateY(-100vh) scale(0.5); opacity: 0; }
+            }
+        `;
+        document.head.appendChild(style);
+    }
 }
 
 if ('serviceWorker' in navigator) {

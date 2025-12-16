@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pro-gym-v1.1'; // Atualizado para garantir que o navegador baixe a nova versão
+const CACHE_NAME = 'pro-gym-v1.2'; // Versão atualizada
 const ASSETS = [
     './',
     './index.html',

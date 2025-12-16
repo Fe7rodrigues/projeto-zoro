@@ -6,7 +6,7 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content"
     />
-    <title>Pro Gym App v1.1</title>
+    <title>Pro Gym App v1.2</title>
 
     <!-- PWA Setup -->
     <link rel="manifest" href="manifest.json" />
@@ -33,7 +33,7 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
     <!-- CSS -->
-    <link rel="stylesheet" href="css/style.css?v=1.1" />
+    <link rel="stylesheet" href="css/style.css?v=1.2" />
   </head>
   <body class="selection:bg-blue-900 selection:text-white">
     
@@ -57,14 +57,14 @@
             <!-- Central Core Image -->
             <div class="relative z-10 w-24 h-24 bg-black rounded-full flex items-center justify-center border border-zinc-800 shadow-[inset_0_0_20px_rgba(0,0,0,1)]">
                 <div class="absolute inset-0 bg-[var(--theme-color)] opacity-20 blur-xl animate-pulse-fast"></div>
-                <img src="assets/img/loading.png" class="w-14 h-14 relative z-20" alt="Loading" />
+                <img src="assets/img/loading.png" class="w-14 h-14 relative z-20" alt="Loading" onerror="this.style.display='none'"/>
             </div>
         </div>
         
         <!-- Decoding Text Effect -->
         <div class="flex flex-col items-center gap-2">
             <h2 class="text-white text-xl font-black tracking-[0.2em] uppercase animate-glitch" data-text="SYSTEM_INIT">
-                PRO GYM v1.1
+                PRO GYM v1.2
             </h2>
             <div class="flex items-center gap-2">
                 <div class="w-2 h-2 bg-[var(--theme-color)] rounded-full animate-ping"></div>
@@ -288,7 +288,7 @@
                 >
               </p>
               <p class="text-zinc-600 text-[9px] font-mono">
-                Pro Gym App v1.1 • Build 2025
+                Pro Gym App v1.2 • Build 2025
               </p>
             </div>
           </div>
