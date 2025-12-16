@@ -1,8 +1,97 @@
 /**
- * PRO GYM APP V1.4.3 (FIX: RESPONSIVE STEPPER & RPE)
+ * PRO GYM APP V1.5 (ARCH: INDEXEDDB & ASYNC IO)
  * Copyright (c) 2025 Fernando Rodrigues. Todos os direitos reservados.
- * Descrição: Sistema profissional com Gestão de Treinos, Stepper UX e Biometria.
+ * Descrição: Sistema profissional com Persistência IDB, Gestão de Treinos e Biometria.
  */
+
+// --- PERSISTÊNCIA (INDEXEDDB WRAPPER) ---
+class GymDatabase {
+    constructor(dbName, storeName) {
+        this.dbName = dbName;
+        this.storeName = storeName;
+        this.db = null;
+        this.version = 1;
+    }
+
+    /**
+     * Inicializa o banco e migra dados do localStorage se existirem.
+     */
+    async init() {
+        return new Promise((resolve, reject) => {
+            const request = indexedDB.open(this.dbName, this.version);
+
+            request.onupgradeneeded = (e) => {
+                this.db = e.target.result;
+                if (!this.db.objectStoreNames.contains(this.storeName)) {
+                    this.db.createObjectStore(this.storeName);
+                }
+            };
+
+            request.onsuccess = async (e) => {
+                this.db = e.target.result;
+                await this.migrateFromLocalStorage();
+                resolve(this.db);
+            };
+
+            request.onerror = (e) => reject(`Erro ao abrir DB: ${e.target.error}`);
+        });
+    }
+
+    /**
+     * Verifica e migra dados legados do localStorage para o IndexedDB.
+     */
+    async migrateFromLocalStorage() {
+        const legacyKey = 'pro_gym_app_v1';
+        const legacyData = localStorage.getItem(legacyKey);
+
+        if (legacyData) {
+            try {
+                console.log('Sistema: Migrando dados legados para IndexedDB...');
+                const parsed = JSON.parse(legacyData);
+                await this.set('root', parsed);
+                // localStorage.removeItem(legacyKey); // Opcional: manter backup por segurança
+            } catch (err) {
+                console.error('Erro na migração de dados:', err);
+            }
+        }
+    }
+
+    async get(key) {
+        return new Promise((resolve, reject) => {
+            const transaction = this.db.transaction([this.storeName], 'readonly');
+            const store = transaction.objectStore(this.storeName);
+            const request = store.get(key);
+
+            request.onsuccess = () => resolve(request.result);
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async set(key, value) {
+        return new Promise((resolve, reject) => {
+            const transaction = this.db.transaction([this.storeName], 'readwrite');
+            const store = transaction.objectStore(this.storeName);
+            const request = store.put(value, key);
+
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    }
+
+    async clear() {
+        return new Promise((resolve, reject) => {
+            const transaction = this.db.transaction([this.storeName], 'readwrite');
+            const store = transaction.objectStore(this.storeName);
+            const request = store.clear();
+
+            request.onsuccess = () => resolve();
+            request.onerror = () => reject(request.error);
+        });
+    }
+}
+
+// Instância Global do Banco de Dados
+const db = new GymDatabase('ProGymDB', 'app_state');
 
 // --- TEMAS PROFISSIONAIS ---
 const THEMES = {
@@ -188,7 +277,7 @@ const utils = {
     getRank(xp) {
         return [...RANKS].reverse().find(r => (xp || 0) >= r.minXP) || RANKS[0];
     },
-
+    
     getNextRank(xp) {
         return RANKS.find(r => r.minXP > (xp || 0));
     },
@@ -294,6 +383,7 @@ const utils = {
 
 // --- STORE (Namespace: pro_gym_app_v1) ---
 const store = {
+    // Estrutura padrão inicial
     data: {
         completedSets: {},
         weights: {},
@@ -307,45 +397,58 @@ const store = {
         visibleVideos: {},
         visibleGraphs: {},
         loadHistory: {},
-        measurements: [], // Array de biometria
-        userHeight: null, // Altura do usuário
+        measurements: [],
+        userHeight: null,
         lastResetWeek: null
     },
-    load() {
-        const saved = localStorage.getItem('pro_gym_app_v1');
-        if (saved) {
-            try {
-                const parsed = JSON.parse(saved);
-                if (parsed && typeof parsed === 'object') {
-                    this.data = { ...this.data, ...parsed };
-                }
 
-                // Validações de Integridade
-                if (!this.data.visibleVideos) this.data.visibleVideos = {};
-                if (!this.data.visibleGraphs) this.data.visibleGraphs = {};
-                if (!this.data.loadHistory) this.data.loadHistory = {};
-                if (!this.data.measurements) this.data.measurements = [];
-                if (!this.data.settings) this.data.settings = { theme: 'azul', soundEnabled: true };
-                if (typeof this.data.xp !== 'number') this.data.xp = 0;
+    /**
+     * Carrega os dados do IndexedDB de forma assíncrona.
+     */
+    async load() {
+        try {
+            await db.init(); // Garante que o banco está aberto
+            const savedData = await db.get('root');
 
-            } catch (e) {
-                console.error("Erro no load (Reset):", e);
+            if (savedData && typeof savedData === 'object') {
+                // Merge dos dados salvos com a estrutura padrão
+                this.data = { ...this.data, ...savedData };
             }
-        }
 
-        const currentWeekSignature = utils.getCurrentWeekSignature();
-        if (this.data.lastResetWeek !== currentWeekSignature) {
-            console.log("Nova semana detectada. Resetando status dos treinos...");
-            this.data.completedSets = {};
-            this.data.lastResetWeek = currentWeekSignature;
-            this.save();
-        }
+            // Validações de Integridade
+            if (!this.data.visibleVideos) this.data.visibleVideos = {};
+            if (!this.data.visibleGraphs) this.data.visibleGraphs = {};
+            if (!this.data.loadHistory) this.data.loadHistory = {};
+            if (!this.data.measurements) this.data.measurements = [];
+            if (!this.data.settings) this.data.settings = { theme: 'azul', soundEnabled: true };
+            if (typeof this.data.xp !== 'number') this.data.xp = 0;
 
-        themeManager.apply(this.data.settings.theme || 'azul');
+            // Lógica de Reset Semanal
+            const currentWeekSignature = utils.getCurrentWeekSignature();
+            if (this.data.lastResetWeek !== currentWeekSignature) {
+                console.log("Nova semana detectada. Resetando status dos treinos...");
+                this.data.completedSets = {};
+                this.data.lastResetWeek = currentWeekSignature;
+                this.save();
+            }
+
+            themeManager.apply(this.data.settings.theme || 'azul');
+
+        } catch (e) {
+            console.error("Erro crítico ao carregar dados do DB:", e);
+        }
     },
-    save() {
+
+    /**
+     * Salva o estado atual no IndexedDB (Non-blocking UI).
+     */
+    async save() {
         const { visibleVideos, visibleGraphs, ...dataToSave } = this.data;
-        localStorage.setItem('pro_gym_app_v1', JSON.stringify(dataToSave));
+        try {
+            await db.set('root', dataToSave);
+        } catch (e) {
+            console.error("Erro ao salvar dados:", e);
+        }
     }
 };
 
@@ -422,13 +525,13 @@ function generateRadarChart(vol) {
         <polygon points="${points}" fill="var(--theme-glow)" stroke="var(--theme-color)" stroke-width="2" fill-opacity="0.4" />
         <circle cx="${centerX}" cy="${centerY}" r="3" fill="var(--theme-color)" />
         ${categories.map((cat, i) => {
-        let val = vol[cat] || 0;
-        const normalized = maxVal === 0 ? 0 : Math.min(val / maxVal, 1);
-        const angle = (Math.PI * 2 * i) / categories.length - Math.PI / 2;
-        const x = centerX + radius * normalized * Math.cos(angle);
-        const y = centerY + radius * normalized * Math.sin(angle);
-        return `<circle cx="${x}" cy="${y}" r="3" fill="#fff" stroke="var(--theme-color)" stroke-width="1"/>`;
-    }).join('')}
+            let val = vol[cat] || 0;
+            const normalized = maxVal === 0 ? 0 : Math.min(val / maxVal, 1);
+            const angle = (Math.PI * 2 * i) / categories.length - Math.PI / 2;
+            const x = centerX + radius * normalized * Math.cos(angle);
+            const y = centerY + radius * normalized * Math.sin(angle);
+            return `<circle cx="${x}" cy="${y}" r="3" fill="#fff" stroke="var(--theme-color)" stroke-width="1"/>`;
+        }).join('')}
     </svg>`;
 }
 
@@ -466,8 +569,8 @@ function generateEvolutionChart(history) {
 
     return `
     <svg viewBox="0 0 ${width} ${height}" class="w-full h-full animate-fade-in bg-zinc-950 rounded-lg border border-zinc-900">
-        <line x1="${padding}" y1="${padding}" x2="${width - padding}" y2="${padding}" stroke="#27272a" stroke-width="0.5" stroke-dasharray="2" />
-        <line x1="${padding}" y1="${height - padding}" x2="${width - padding}" y2="${height - padding}" stroke="#27272a" stroke-width="0.5" stroke-dasharray="2" />
+        <line x1="${padding}" y1="${padding}" x2="${width-padding}" y2="${padding}" stroke="#27272a" stroke-width="0.5" stroke-dasharray="2" />
+        <line x1="${padding}" y1="${height-padding}" x2="${width-padding}" y2="${height-padding}" stroke="#27272a" stroke-width="0.5" stroke-dasharray="2" />
         <path d="${pathD}" fill="none" stroke="var(--theme-color)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="animate-draw-line" />
         ${circles}
         ${minLabel}
@@ -672,7 +775,7 @@ const measurementsManager = {
             document.getElementById('meas-thigh').value = last.thigh || '';
         }
     },
-
+    
     closeModal() {
         document.getElementById('measurements-modal').classList.add('hidden');
     },
@@ -692,7 +795,7 @@ const measurementsManager = {
         if (!store.data.measurements) store.data.measurements = [];
 
         store.data.measurements.unshift(entry);
-        store.save();
+        store.save(); // Save is async, but we can fire-and-forget for UI responsiveness here
         this.closeModal();
         router.renderMeasurements(document.getElementById('main-content'));
     },
@@ -707,20 +810,20 @@ const measurementsManager = {
 
 const notesManager = {
     cid: null,
-
+    
     open(id) {
         this.cid = id;
         document.getElementById('note-input').value = (store.data.notes && store.data.notes[id]) || '';
         document.getElementById('notes-modal').classList.remove('hidden');
     },
-
+    
     save() {
         store.data.notes[this.cid] = document.getElementById('note-input').value;
         store.save();
         this.close();
         router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
-
+    
     close() {
         document.getElementById('notes-modal').classList.add('hidden');
     }
@@ -730,18 +833,19 @@ const settings = {
     open() {
         document.getElementById('settings-modal').classList.remove('hidden');
     },
-
+    
     close() {
         document.getElementById('settings-modal').classList.add('hidden');
     },
-
-    clearAll() {
+    
+    async clearAll() {
         if (confirm('ATENÇÃO: Deseja apagar todo o histórico e começar do zero?')) {
-            localStorage.removeItem('pro_gym_app_v1');
+            await db.clear();
+            localStorage.removeItem('pro_gym_app_v1'); // Limpeza legado
             location.reload();
         }
     },
-
+    
     exportData() {
         const blob = new Blob([JSON.stringify(store.data)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
@@ -750,15 +854,16 @@ const settings = {
         a.download = `progym_backup_${utils.getTodayDate()}.json`;
         a.click();
     },
-
+    
     importData(i) {
         const f = i.files[0];
         if (!f) return;
         const r = new FileReader();
-        r.onload = e => {
+        r.onload = async e => {
             try {
-                store.data = JSON.parse(e.target.result);
-                store.save();
+                const importedData = JSON.parse(e.target.result);
+                store.data = importedData;
+                await store.save(); // Persiste no IDB
                 alert('Dados importados com sucesso.');
                 location.reload();
             } catch (e) {
@@ -775,7 +880,7 @@ const tools = {
         const r = parseFloat(document.getElementById('rm-reps').value) || 0;
         document.getElementById('rm-result').innerText = w > 0 && r > 0 ? `${utils.calculate1RM(w, r)} kg` : '-- kg';
     },
-
+    
     calcPlates() {
         const t = parseFloat(document.getElementById('plate-target').value) || 0;
         const plates = utils.calculatePlates(t);
@@ -789,7 +894,7 @@ const tools = {
 // --- ROUTER & VIEWS ---
 const router = {
     currentParams: null,
-
+    
     navigate(route, params = {}) {
         this.currentParams = params;
         const app = document.getElementById('main-content');
@@ -1347,7 +1452,7 @@ const actions = {
             store.data.xp = Math.max(0, (store.data.xp || 0) - 1);
         }
 
-        store.save();
+        store.save(); // Persistência em background
         const newParams = { ...router.currentParams, animSet: animId };
         router.renderDetail(document.getElementById('main-content'), newParams);
     },
@@ -1374,7 +1479,7 @@ const actions = {
         store.save();
         router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
-
+    
     // NOVO MÉTODO STEPPER
     adjustWeight(exId, delta) {
         const inputEl = document.getElementById(`weight-input-${exId}`);
@@ -1389,13 +1494,13 @@ const actions = {
             setTimeout(() => inputEl.style.color = 'white', 300);
         }
     },
-
+    
     setRPE(ex, v) {
         if (!store.data.rpe) store.data.rpe = {};
         store.data.rpe[ex] = v;
         store.save();
     },
-
+    
     cardio() {
         if (!store.data.cardioHistory) store.data.cardioHistory = {};
         const d = utils.getTodayDate();
@@ -1403,21 +1508,21 @@ const actions = {
         store.save();
         router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
-
+    
     toggleVideo(exId) {
         if (!store.data.visibleVideos) store.data.visibleVideos = {};
         store.data.visibleVideos[exId] = !store.data.visibleVideos[exId];
         if (store.data.visibleGraphs[exId]) store.data.visibleGraphs[exId] = false;
         router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
-
+    
     toggleGraph(exId) {
         if (!store.data.visibleGraphs) store.data.visibleGraphs = {};
         store.data.visibleGraphs[exId] = !store.data.visibleGraphs[exId];
         if (store.data.visibleVideos[exId]) store.data.visibleVideos[exId] = false;
         router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
-
+    
     reset(id) {
         if (!confirm('Reiniciar esta sessão? (Seu XP será mantido)')) return;
         const w = WORKOUT_PLAN.find(x => x.id === id);
@@ -1431,7 +1536,7 @@ const actions = {
             router.renderDetail(document.getElementById('main-content'), router.currentParams);
         }
     },
-
+    
     finish() {
         const btn = document.getElementById('btn-finish-session');
         if (btn) {
@@ -1474,14 +1579,7 @@ function celebrateCompletion() {
 }
 
 function initApp() {
-    const splash = document.getElementById('splash-screen');
-    setTimeout(() => {
-        if (splash) {
-            splash.classList.add('splash-hidden');
-            setTimeout(() => { splash.style.display = 'none'; }, 500);
-        }
-    }, 1500);
-
+    // Inicialização visual e de eventos
     if (!document.getElementById('confetti-style')) {
         const style = document.createElement('style');
         style.id = 'confetti-style';
@@ -1502,8 +1600,26 @@ if ('serviceWorker' in navigator) {
     });
 }
 
-document.addEventListener('DOMContentLoaded', () => {
-    initApp();
-    store.load();
-    router.navigate('home');
+document.addEventListener('DOMContentLoaded', async () => {
+    const splash = document.getElementById('splash-screen');
+    
+    try {
+        // Carregamento Assíncrono dos Dados (Bloqueia UI inicial para evitar glitch)
+        await store.load();
+        
+        initApp();
+        router.navigate('home');
+        
+    } catch (error) {
+        console.error("Critical: Failed to load application data.", error);
+        alert("Erro ao carregar dados do sistema. Tente recarregar.");
+    } finally {
+        // Remove Splash Screen
+        setTimeout(() => {
+            if (splash) {
+                splash.classList.add('splash-hidden');
+                setTimeout(() => { splash.style.display = 'none'; }, 500);
+            }
+        }, 800);
+    }
 });

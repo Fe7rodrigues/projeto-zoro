@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pro-gym-v1.2'; // Versão atualizada
+const CACHE_NAME = 'pro-gym-v1.5-idb'; // NOME ATUALIZADO PARA FORÇAR REFRESH
 const ASSETS = [
     './',
     './index.html',
@@ -11,25 +11,22 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (e) => {
-    // Força o SW a ativar imediatamente após instalar, sem esperar o usuário fechar a aba
     self.skipWaiting(); 
     e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
 });
 
 self.addEventListener('activate', (e) => {
-    // Limpeza automática de caches antigos para evitar conflitos com versões anteriores
     e.waitUntil(
         caches.keys().then((keyList) => {
             return Promise.all(
                 keyList.map((key) => {
                     if (key !== CACHE_NAME) {
-                        return caches.delete(key);
+                        return caches.delete(key); // Limpa o cache antigo (v1.2)
                     }
                 })
             );
         })
     );
-    // Torna o SW ativo na página imediatamente
     return self.clients.claim(); 
 });
 
