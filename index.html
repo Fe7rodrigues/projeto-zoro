@@ -8,60 +8,43 @@
     />
     <title>Pro Gym App v1.2</title>
 
-    <!-- PWA Setup -->
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#09090b" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta
-      name="apple-mobile-web-app-status-bar-style"
-      content="black-translucent"
-    />
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
 
-    <!-- Ícone para iOS -->
     <link rel="apple-touch-icon" href="assets/img/icon.png" />
 
-    <!-- Favicon -->
     <link rel="icon" type="image/png" href="assets/img/logo.png" />
 
-    <!-- Libs -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     
-    <!-- Fonts: Inter (UI) & JetBrains Mono (Dados) -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
-    <!-- CSS -->
     <link rel="stylesheet" href="css/style.css?v=1.2" />
   </head>
   <body class="selection:bg-blue-900 selection:text-white">
     
-    <!-- SPLASH SCREEN: QUANTUM REACTOR (v1.1 Edition) -->
     <div id="splash-screen" class="fixed inset-0 bg-[#050505] z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
         
-        <!-- Reactor Container -->
         <div class="relative w-48 h-48 flex items-center justify-center mb-10">
-            <!-- Outer Energy Field -->
             <div class="absolute inset-0 rounded-full border border-zinc-800 animate-pulse"></div>
             
-            <!-- Ring 1: High Speed Neon -->
             <div class="absolute inset-2 rounded-full border-t-4 border-[var(--theme-color)] animate-reactor-spin-fast shadow-[0_0_30px_var(--theme-glow)]"></div>
             
-            <!-- Ring 2: Reverse Stabilizer -->
             <div class="absolute inset-6 rounded-full border-b-4 border-l-2 border-white opacity-20 animate-reactor-spin-reverse"></div>
             
-            <!-- Ring 3: Inner Core Glow -->
             <div class="absolute inset-10 rounded-full border-2 border-dashed border-[var(--theme-color)] animate-spin-slow opacity-60"></div>
 
-            <!-- Central Core Image -->
             <div class="relative z-10 w-24 h-24 bg-black rounded-full flex items-center justify-center border border-zinc-800 shadow-[inset_0_0_20px_rgba(0,0,0,1)]">
                 <div class="absolute inset-0 bg-[var(--theme-color)] opacity-20 blur-xl animate-pulse-fast"></div>
                 <img src="assets/img/loading.png" class="w-14 h-14 relative z-20" alt="Loading" onerror="this.style.display='none'"/>
             </div>
         </div>
         
-        <!-- Decoding Text Effect -->
         <div class="flex flex-col items-center gap-2">
             <h2 class="text-white text-xl font-black tracking-[0.2em] uppercase animate-glitch" data-text="SYSTEM_INIT">
                 PRO GYM v1.2
@@ -73,32 +56,26 @@
         </div>
     </div>
 
-    <!-- Background: Clean Tech -->
     <div class="background-fx"></div>
 
     <div id="app-container">
-      <!-- Header -->
       <header
         id="main-header"
         class="glass-header px-5 py-4 flex items-center justify-between hidden"
       >
-        <!-- Injetado via JS -->
-      </header>
+        </header>
 
-      <!-- Main Content -->
       <main id="main-content">
-        <!-- Views -->
-      </main>
+        </main>
 
-      <!-- Navbar -->
       <nav id="bottom-nav" class="flex justify-around items-center">
         <button onclick="router.navigate('home')" class="nav-btn group">
-          <i data-lucide="layout-grid" class="icon-nav"></i
-          ><span class="label-nav">PAINEL</span>
+          <i data-lucide="layout-grid" class="icon-nav"></i>
+          <span class="label-nav">PAINEL</span>
         </button>
         <button onclick="router.navigate('stats')" class="nav-btn group">
-          <i data-lucide="activity" class="icon-nav"></i
-          ><span class="label-nav">STATS</span>
+          <i data-lucide="activity" class="icon-nav"></i>
+          <span class="label-nav">STATS</span>
         </button>
         <div class="relative -top-6">
           <button
@@ -112,16 +89,15 @@
           </button>
         </div>
         <button onclick="router.navigate('achievements')" class="nav-btn group">
-          <i data-lucide="award" class="icon-nav"></i
-          ><span class="label-nav">META</span>
+          <i data-lucide="award" class="icon-nav"></i>
+          <span class="label-nav">META</span>
         </button>
         <button onclick="settings.open()" class="nav-btn group">
-          <i data-lucide="sliders-horizontal" class="icon-nav"></i
-          ><span class="label-nav">CONFIG</span>
+          <i data-lucide="sliders-horizontal" class="icon-nav"></i>
+          <span class="label-nav">CONFIG</span>
         </button>
       </nav>
 
-      <!-- MODAL: Timer -->
       <div
         id="timer-modal"
         class="hidden fixed bottom-24 left-4 right-4 bg-[#18181b] border border-zinc-800 rounded-xl shadow-2xl p-5 z-50 animate-slide-up"
@@ -178,7 +154,6 @@
         </div>
       </div>
 
-      <!-- MODAL: Notas -->
       <div
         id="notes-modal"
         class="hidden modal-overlay animate-fade-in fixed inset-0 z-50 flex items-center justify-center bg-black/80"
@@ -206,7 +181,6 @@
         </div>
       </div>
 
-      <!-- MODAL: Ajustes -->
       <div
         id="settings-modal"
         class="hidden modal-overlay animate-fade-in fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-black/80"
@@ -224,7 +198,6 @@
             </button>
           </div>
 
-          <!-- Seção de Temas Profissionais -->
           <div class="mb-8">
             <h4 class="text-xs font-bold text-zinc-500 uppercase mb-4 tracking-widest">Tema da Interface</h4>
             <div class="grid grid-cols-2 gap-3">
@@ -244,7 +217,6 @@
                     <div class="w-4 h-4 rounded-full bg-[#f97316] shadow-[0_0_10px_#f97316]"></div>
                     <span class="text-sm font-medium text-zinc-300 group-hover:text-white">Laranja</span>
                 </button>
-                <!-- NOVOS TEMAS (v1.1) -->
                 <button onclick="themeManager.setTheme('rosa')" class="flex items-center gap-3 p-3 rounded-lg border border-zinc-800 bg-zinc-900/50 hover:border-[#FD0963] transition-all group">
                     <div class="w-4 h-4 rounded-full bg-[#FD0963] shadow-[0_0_10px_#FD0963]"></div>
                     <span class="text-sm font-medium text-zinc-300 group-hover:text-white">Rosa</span>
@@ -256,7 +228,6 @@
             </div>
           </div>
 
-          <!-- Gestão de Dados -->
           <div class="space-y-4">
             <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest">Dados do Usuário</h4>
             <div class="p-1 bg-zinc-900 rounded-xl border border-zinc-800 flex">
@@ -277,7 +248,6 @@
               <i data-lucide="trash-2" class="w-4 h-4"></i> RESETAR DADOS
             </button>
 
-            <!-- Footer -->
             <div class="mt-8 text-center pt-6 border-t border-zinc-800/50">
               <p
                 class="text-zinc-500 text-[10px] font-bold uppercase tracking-widest mb-1"
@@ -296,7 +266,6 @@
       </div>
     </div>
 
-    <!-- Script Local -->
     <script src="js/script.js"></script>
   </body>
 </html>
