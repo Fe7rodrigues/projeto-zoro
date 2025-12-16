@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pro-gym-v1.6-idb'; // NOME ATUALIZADO PARA FORÇAR REFRESH
+const CACHE_NAME = 'pro-gym-v1.7-idb'; // NOME ATUALIZADO PARA FORÇAR REFRESH
 const ASSETS = [
     './',
     './index.html',

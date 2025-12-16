@@ -1,7 +1,7 @@
 /**
- * PRO GYM APP V1.6 (ARCH: WORKER TIMER & INDEXEDDB)
+ * PRO GYM APP V1.7 (ARCH: IDB + WORKER + GHOST SET)
  * Copyright (c) 2025 Fernando Rodrigues. Todos os direitos reservados.
- * Descrição: Sistema profissional com Persistência IDB e Timer em Background.
+ * Descrição: Sistema profissional com Persistência IDB, Timer Background e Ghost Set Analytics.
  */
 
 // --- PERSISTÊNCIA (INDEXEDDB WRAPPER) ---
@@ -230,6 +230,30 @@ const utils = {
         if (diff === 0) return `<span class="delta-tag delta-neu">▬</span>`;
         if (diff > 0) return `<span class="delta-tag delta-pos">▲ +${roundedDiff}kg</span>`;
         return `<span class="delta-tag delta-neg">▼ ${roundedDiff}kg</span>`;
+    },
+    
+    // NOVO (v1.7): Busca o registro histórico anterior para o Ghost Set
+    getGhostLog(exId) {
+        if (!store.data.loadHistory || !store.data.loadHistory[exId]) return null;
+        
+        const history = store.data.loadHistory[exId];
+        const today = this.getTodayDate();
+        
+        // Filtra para ignorar o dia atual e pega o último (pop)
+        const prevLog = history.filter(h => h.date !== today).pop();
+        
+        if (!prevLog) return null;
+
+        const date1 = new Date(today);
+        const date2 = new Date(prevLog.date);
+        const diffTime = Math.abs(date1 - date2);
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
+        
+        let timeLabel = `${diffDays}d atrás`;
+        if (diffDays === 1) timeLabel = 'Ontem';
+        if (diffDays > 30) timeLabel = '>30d';
+
+        return { load: prevLog.load, label: timeLabel };
     },
 
     getHeatmapData() {
@@ -555,7 +579,6 @@ const timer = {
                 }
             };
         }
-        // Solicita permissão para notificações
         if ("Notification" in window && Notification.permission === "default") {
             Notification.requestPermission();
         }
@@ -960,6 +983,15 @@ const router = {
             const delta = utils.getDelta(ex.id) || '';
             const currentRPE = (store.data.rpe && store.data.rpe[ex.id]) || 'RPE';
 
+            // GHOST SET LOGIC (v1.7)
+            const ghost = utils.getGhostLog(ex.id);
+            const currentWeight = parseFloat(store.data.weights && store.data.weights[ex.id]) || 0;
+            const isRecord = ghost && currentWeight > ghost.load;
+            const ghostClass = isRecord ? 'ghost-tag beat-record' : 'ghost-tag';
+            const ghostHtml = ghost 
+                ? `<div class="${ghostClass}"><i data-lucide="ghost" class="w-3 h-3"></i> <span>${ghost.load}kg (${ghost.label})</span></div>`
+                : `<div class="ghost-tag opacity-50"><span>--</span></div>`;
+
             const videoContent = isVideoVisible ? `
                     <div class="mt-4 w-full rounded-lg overflow-hidden bg-black aspect-video border border-zinc-800 animate-fade-in relative shadow-lg">
                          <iframe class="w-full h-full" src="https://www.youtube.com/embed/${ex.youtube}?rel=0" frameborder="0" allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture" allowfullscreen></iframe>
@@ -979,31 +1011,34 @@ const router = {
                             <h3 class="text-white font-bold text-sm leading-snug mb-2">${ex.name}</h3>
                             <p class="text-zinc-600 text-[10px] font-mono mb-3 truncate max-w-[200px]">${ex.machine || 'Peso Livre'}</p>
                             
-                            <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
-                                <div class="stepper-wrapper">
-                                    <button onclick="actions.adjustWeight('${ex.id}', -5)" class="stepper-btn"><i data-lucide="minus" class="w-3 h-3"></i></button>
-                                    <input 
-                                        id="weight-input-${ex.id}"
-                                        type="number" 
-                                        inputmode="decimal" 
-                                        step="0.5"
-                                        value="${(store.data.weights && store.data.weights[ex.id]) || ''}" 
-                                        onchange="actions.weight('${ex.id}', this.value)" 
-                                        class="stepper-input" 
-                                        placeholder="kg"
-                                    >
-                                    <button onclick="actions.adjustWeight('${ex.id}', 5)" class="stepper-btn"><i data-lucide="plus" class="w-3 h-3"></i></button>
-                                </div>
+                            <div class="flex flex-col gap-1">
+                                <div class="flex items-center gap-2 flex-wrap sm:flex-nowrap">
+                                    <div class="stepper-wrapper">
+                                        <button onclick="actions.adjustWeight('${ex.id}', -5)" class="stepper-btn"><i data-lucide="minus" class="w-3 h-3"></i></button>
+                                        <input 
+                                            id="weight-input-${ex.id}"
+                                            type="number" 
+                                            inputmode="decimal" 
+                                            step="0.5"
+                                            value="${(store.data.weights && store.data.weights[ex.id]) || ''}" 
+                                            onchange="actions.weight('${ex.id}', this.value)" 
+                                            class="stepper-input" 
+                                            placeholder="kg"
+                                        >
+                                        <button onclick="actions.adjustWeight('${ex.id}', 5)" class="stepper-btn"><i data-lucide="plus" class="w-3 h-3"></i></button>
+                                    </div>
 
-                                <select onchange="actions.setRPE('${ex.id}', this.value)" class="select-rpe w-14 flex-shrink-0">
-                                    <option value="" disabled ${currentRPE === 'RPE' ? 'selected' : ''}>RPE</option>
-                                    <option value="5" ${currentRPE == '5' ? 'selected' : ''}>5</option>
-                                    <option value="8" ${currentRPE == '8' ? 'selected' : ''}>8</option>
-                                    <option value="10" ${currentRPE == '10' ? 'selected' : ''}>10</option>
-                                    <option value="12" ${currentRPE == '12' ? 'selected' : ''}>12</option>
-                                    <option value="15" ${currentRPE == '15' ? 'selected' : ''}>15</option>
-                                </select>
-                                ${delta}
+                                    <select onchange="actions.setRPE('${ex.id}', this.value)" class="select-rpe w-14 flex-shrink-0">
+                                        <option value="" disabled ${currentRPE === 'RPE' ? 'selected' : ''}>RPE</option>
+                                        <option value="5" ${currentRPE == '5' ? 'selected' : ''}>5</option>
+                                        <option value="8" ${currentRPE == '8' ? 'selected' : ''}>8</option>
+                                        <option value="10" ${currentRPE == '10' ? 'selected' : ''}>10</option>
+                                        <option value="12" ${currentRPE == '12' ? 'selected' : ''}>12</option>
+                                        <option value="15" ${currentRPE == '15' ? 'selected' : ''}>15</option>
+                                    </select>
+                                    ${delta}
+                                </div>
+                                ${ghostHtml}
                             </div>
                         </div>
                         
