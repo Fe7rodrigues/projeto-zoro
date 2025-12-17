@@ -1,40 +1,53 @@
-# Pro Gym App v1.5 🏋️
+# Pro Gym App v1.8 🏋️
 
-Sistema profissional de gestão de treinos e performance (PWA), atualizado com arquitetura de dados assíncrona de alta performance.
+Sistema profissional de gestão de treinos e performance (PWA), desenvolvido com foco em métricas, densidade de trabalho e uma arquitetura técnica de alta precisão (IndexedDB + Web Workers).
 
 ---
 
 ## 📋 Visão Geral
 
-O **Pro Gym App (v1.5)** eleva o padrão da aplicação migrando a persistência de dados para **IndexedDB**, garantindo performance não-bloqueante (Non-blocking I/O) e escalabilidade para anos de histórico de treinamento.
+O **Pro Gym App (v1.8)** redefine a experiência de treino móvel ao combinar uma interface **Clean Dark** livre de distrações com um motor de dados robusto.
 
-A interface mantém a estética **Clean Dark & Technical**, mas o motor interno foi reescrito para suportar grandes volumes de dados biométricos e logs de carga sem comprometer a fluidez da UI (60fps).
-
----
-
-## 🚀 Stack Tecnológica (v1.5)
-
-**Core:** HTML5, JavaScript (ES6+ Async/Await), CSS3  
-**Architecture:** IndexedDB Wrapper (Promise-based) & Service Workers  
-**UI/UX:** Tailwind CSS + Glassmorphism  
-**Persistência:** **IndexedDB** (`ProGymDB`) com migração automática de legado (`localStorage`).  
-**Hosting:** PWA Installable (Manifest v2)
+Diferente de aplicações comuns, esta versão opera com uma arquitetura **Local-First** assíncrona, garantindo que o cronómetro de descanso funcione em _background_ (mesmo com o ecrã desligado) e que anos de histórico sejam carregados instantaneamente sem bloquear a interface.
 
 ---
 
-## ✨ Novidades da Versão 1.5
+## 🚀 Stack Tecnológica (v1.8)
 
-### 💾 Arquitetura IndexedDB
+- **Core:** HTML5 Semântico, CSS3 (Tailwind + Glassmorphism), JavaScript (ES6+ Modules).
+- **Arquitetura de Dados:** **IndexedDB** (`GymDatabase` Wrapper) para persistência escalável e não-bloqueante.
+- **Multithreading:** **Web Workers** para processamento do Timer fora da _Main Thread_.
+- **PWA:** Service Workers (Cache Strategy v1.8) + Manifest V2 (Instalável).
+- **Visualização:** SVG Dinâmico (Radar Charts) e DOM Manipulation otimizado.
 
-- Substituição do `localStorage` (síncrono/limitado) pelo **IndexedDB** (assíncrono/robusto).
-- Classe wrapper `GymDatabase` personalizada para manipulação de dados baseada em Promises.
-- Migração automática: O sistema detecta e importa dados antigos do localStorage na primeira execução.
+---
 
-### ⚡ Performance & UX
+## ✨ Funcionalidades da Versão 1.8
 
-- Operações de I/O (Salvar/Carregar) movidas para fora da thread principal de renderização.
-- **Splash Screen Ativa:** Feedback visual ("Carregando Database...") durante a inicialização assíncrona.
-- Melhoria no sistema de Cache Busting via Service Worker atualizado.
+### 🎮 Gamificação Visual (Novo!)
+
+O sistema de temas agora está atrelado ao nível de experiência (XP) do utilizador.
+
+- **16 Temas Exclusivos:** Do básico "Iniciante (Azul)" ao lendário "Mestre (Ouro/Olympia)".
+- **Progression Unlocks:** Novos esquemas de cores são desbloqueados automaticamente ao atingir marcos de XP (ex: 5000 XP para o tema _Cyber_).
+
+### 👻 Ghost Set Analytics (Novo!)
+
+Contexto imediato durante a execução do exercício.
+
+- O sistema consulta o histórico em tempo real e exibe a carga e repetições do treino anterior logo abaixo do _input_.
+- **Feedback Visual:** Indicadores visuais (pulso/cor) ativam-se quando o utilizador supera a sua marca anterior (_Personal Record_).
+
+### ⚡ Timer de Precisão (Web Workers)
+
+- A contagem regressiva de descanso foi migrada para um **Web Worker** dedicado (`timer.worker.js`).
+- **Benefício:** O tempo não sofre _throttling_ ou atrasos quando o navegador entra em segundo plano ou o ecrã é desligado para poupar bateria.
+- **Integração:** Dispara notificações nativas do sistema operativo ao finalizar o descanso.
+
+### 💾 Persistência Assíncrona
+
+- Migração completa do `localStorage` (síncrono/limitado) para o **IndexedDB** (assíncrono/robusto).
+- Suporte para grandes volumes de dados (anos de logs e biometria) sem impacto na fluidez da UI (60fps).
 
 ---
 
@@ -43,14 +56,15 @@ A interface mantém a estética **Clean Dark & Technical**, mas o motor interno 
 ```text
 pro-gym-app/
 ├── css/
-│   └── style.css          # Estilos v1.5 (Animações Quantum & Layout)
+│   └── style.css          # Estilos v1.8 (Temas Dinâmicos & Animações)
 ├── js/
-│   └── script.js          # Core Logic + GymDatabase Class (IDB Wrapper)
+│   ├── script.js          # Core Logic, IDB Wrapper & UI Controller
+│   └── timer.worker.js    # Thread isolada para cronometragem precisa
 ├── assets/
-│   └── img/               # Assets otimizados
-├── index.html             # App Shell (Updated for Async Init)
-├── manifest.json          # PWA Config
-├── service-worker.js      # Cache Strategy (Stale-while-revalidate / IDB-First)
+│   └── img/               # Assets otimizados (Icons, Logos)
+├── index.html             # App Shell (Updated Layout)
+├── manifest.json          # Configuração PWA
+├── service-worker.js      # Cache Busting & Offline Support
 └── README.md              # Documentação Técnica
 ```
 

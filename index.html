@@ -6,12 +6,15 @@
       name="viewport"
       content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content"
     />
-    <title>Pro Gym App v1.5</title>
+    <title>Pro Gym App v1.8</title>
 
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#09090b" />
     <meta name="apple-mobile-web-app-capable" content="yes" />
-    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
+    <meta
+      name="apple-mobile-web-app-status-bar-style"
+      content="black-translucent"
+    />
 
     <link rel="apple-touch-icon" href="assets/img/icon.png" />
 
@@ -19,41 +22,66 @@
 
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap" rel="stylesheet">
 
-    <link rel="stylesheet" href="css/style.css?v=1.5" />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+
+    <link rel="stylesheet" href="css/style.css?v=1.8" />
   </head>
   <body class="selection:bg-blue-900 selection:text-white">
-    
-    <div id="splash-screen" class="fixed inset-0 bg-[#050505] z-[100] flex flex-col items-center justify-center transition-opacity duration-500">
-        
-        <div class="relative w-48 h-48 flex items-center justify-center mb-10">
-            <div class="absolute inset-0 rounded-full border border-zinc-800 animate-pulse"></div>
-            
-            <div class="absolute inset-2 rounded-full border-t-4 border-[var(--theme-color)] animate-reactor-spin-fast shadow-[0_0_30px_var(--theme-glow)]"></div>
-            
-            <div class="absolute inset-6 rounded-full border-b-4 border-l-2 border-white opacity-20 animate-reactor-spin-reverse"></div>
-            
-            <div class="absolute inset-10 rounded-full border-2 border-dashed border-[var(--theme-color)] animate-spin-slow opacity-60"></div>
+    <div
+      id="splash-screen"
+      class="fixed inset-0 bg-[#050505] z-[100] flex flex-col items-center justify-center transition-opacity duration-500"
+    >
+      <div class="relative w-48 h-48 flex items-center justify-center mb-10">
+        <div
+          class="absolute inset-0 rounded-full border border-zinc-800 animate-pulse"
+        ></div>
+        <div
+          class="absolute inset-2 rounded-full border-t-4 border-[var(--theme-color)] animate-reactor-spin-fast shadow-[0_0_30px_var(--theme-glow)]"
+        ></div>
+        <div
+          class="absolute inset-6 rounded-full border-b-4 border-l-2 border-white opacity-20 animate-reactor-spin-reverse"
+        ></div>
+        <div
+          class="absolute inset-10 rounded-full border-2 border-dashed border-[var(--theme-color)] animate-spin-slow opacity-60"
+        ></div>
+        <div
+          class="relative z-10 w-24 h-24 bg-black rounded-full flex items-center justify-center border border-zinc-800 shadow-[inset_0_0_20px_rgba(0,0,0,1)]"
+        >
+          <div
+            class="absolute inset-0 bg-[var(--theme-color)] opacity-20 blur-xl animate-pulse-fast"
+          ></div>
+          <img
+            src="assets/img/loading.png"
+            class="w-14 h-14 relative z-20"
+            alt="Loading"
+            onerror="this.style.display='none'"
+          />
+        </div>
+      </div>
 
-            <div class="relative z-10 w-24 h-24 bg-black rounded-full flex items-center justify-center border border-zinc-800 shadow-[inset_0_0_20px_rgba(0,0,0,1)]">
-                <div class="absolute inset-0 bg-[var(--theme-color)] opacity-20 blur-xl animate-pulse-fast"></div>
-                <img src="assets/img/loading.png" class="w-14 h-14 relative z-20" alt="Loading" onerror="this.style.display='none'"/>
-            </div>
+      <div class="flex flex-col items-center gap-2">
+        <h2
+          class="text-white text-xl font-black tracking-[0.2em] uppercase animate-glitch"
+          data-text="SYSTEM_INIT"
+        >
+          PRO GYM v1.8
+        </h2>
+        <div class="flex items-center gap-2">
+          <div
+            class="w-2 h-2 bg-[var(--theme-color)] rounded-full animate-ping"
+          ></div>
+          <span
+            class="text-[var(--theme-color)] text-[10px] font-mono font-bold"
+            >CARREGANDO PERFIL...</span
+          >
         </div>
-        
-        <div class="flex flex-col items-center gap-2">
-            <h2 class="text-white text-xl font-black tracking-[0.2em] uppercase animate-glitch" data-text="SYSTEM_INIT">
-                PRO GYM v1.5
-            </h2>
-            <div class="flex items-center gap-2">
-                <div class="w-2 h-2 bg-[var(--theme-color)] rounded-full animate-ping"></div>
-                <span class="text-[var(--theme-color)] text-[10px] font-mono font-bold">CARREGANDO DATABASE...</span>
-            </div>
-        </div>
+      </div>
     </div>
 
     <div class="background-fx"></div>
@@ -62,11 +90,9 @@
       <header
         id="main-header"
         class="glass-header px-5 py-4 flex items-center justify-between hidden"
-      >
-        </header>
+      ></header>
 
-      <main id="main-content">
-        </main>
+      <main id="main-content"></main>
 
       <nav id="bottom-nav" class="flex justify-around items-center">
         <button onclick="router.navigate('home')" class="nav-btn group">
@@ -162,8 +188,14 @@
           class="bg-[#18181b] w-full max-w-sm rounded-xl border border-zinc-800 p-6 shadow-2xl"
         >
           <div class="flex justify-between items-center mb-4">
-            <h3 class="text-lg font-bold text-white flex items-center gap-2"><i data-lucide="file-text" class="w-5 h-5 text-zinc-400"></i> Notas Técnicas</h3>
-            <button onclick="notesManager.close()" class="text-zinc-500 hover:text-white">
+            <h3 class="text-lg font-bold text-white flex items-center gap-2">
+              <i data-lucide="file-text" class="w-5 h-5 text-zinc-400"></i>
+              Notas Técnicas
+            </h3>
+            <button
+              onclick="notesManager.close()"
+              class="text-zinc-500 hover:text-white"
+            >
               <i data-lucide="x" class="w-6 h-6"></i>
             </button>
           </div>
@@ -199,46 +231,54 @@
           </div>
 
           <div class="mb-8">
-            <h4 class="text-xs font-bold text-zinc-500 uppercase mb-4 tracking-widest">Tema da Interface</h4>
-            <div class="grid grid-cols-2 gap-3">
-                <button onclick="themeManager.setTheme('azul')" class="flex items-center gap-3 p-3 rounded-lg border border-zinc-800 bg-zinc-900/50 hover:border-blue-500 transition-all group">
-                    <div class="w-4 h-4 rounded-full bg-[#3b82f6] shadow-[0_0_10px_#3b82f6]"></div>
-                    <span class="text-sm font-medium text-zinc-300 group-hover:text-white">Azul</span>
-                </button>
-                <button onclick="themeManager.setTheme('vermelho')" class="flex items-center gap-3 p-3 rounded-lg border border-zinc-800 bg-zinc-900/50 hover:border-red-500 transition-all group">
-                    <div class="w-4 h-4 rounded-full bg-[#ef4444] shadow-[0_0_10px_#ef4444]"></div>
-                    <span class="text-sm font-medium text-zinc-300 group-hover:text-white">Vermelho</span>
-                </button>
-                <button onclick="themeManager.setTheme('verde')" class="flex items-center gap-3 p-3 rounded-lg border border-zinc-800 bg-zinc-900/50 hover:border-emerald-500 transition-all group">
-                    <div class="w-4 h-4 rounded-full bg-[#10b981] shadow-[0_0_10px_#10b981]"></div>
-                    <span class="text-sm font-medium text-zinc-300 group-hover:text-white">Verde</span>
-                </button>
-                <button onclick="themeManager.setTheme('laranja')" class="flex items-center gap-3 p-3 rounded-lg border border-zinc-800 bg-zinc-900/50 hover:border-orange-500 transition-all group">
-                    <div class="w-4 h-4 rounded-full bg-[#f97316] shadow-[0_0_10px_#f97316]"></div>
-                    <span class="text-sm font-medium text-zinc-300 group-hover:text-white">Laranja</span>
-                </button>
-                <button onclick="themeManager.setTheme('rosa')" class="flex items-center gap-3 p-3 rounded-lg border border-zinc-800 bg-zinc-900/50 hover:border-[#FD0963] transition-all group">
-                    <div class="w-4 h-4 rounded-full bg-[#FD0963] shadow-[0_0_10px_#FD0963]"></div>
-                    <span class="text-sm font-medium text-zinc-300 group-hover:text-white">Rosa</span>
-                </button>
-                <button onclick="themeManager.setTheme('roxo')" class="flex items-center gap-3 p-3 rounded-lg border border-zinc-800 bg-zinc-900/50 hover:border-[#8A00c4] transition-all group">
-                    <div class="w-4 h-4 rounded-full bg-[#8A00c4] shadow-[0_0_10px_#8A00c4]"></div>
-                    <span class="text-sm font-medium text-zinc-300 group-hover:text-white">Roxo</span>
-                </button>
+            <div class="flex justify-between items-end mb-4 px-1">
+              <div>
+                <h4
+                  class="text-xs font-bold text-zinc-500 uppercase tracking-widest"
+                >
+                  Personalização
+                </h4>
+                <p class="text-[9px] text-zinc-600 font-mono">
+                  Desbloqueie cores subindo de nível.
+                </p>
+              </div>
+              <span
+                class="text-[10px] text-[var(--theme-color)] font-mono font-bold bg-[var(--theme-bg-soft)] px-2 py-1 rounded border border-[var(--theme-color)]"
+              >
+                XP: <span id="settings-xp-display">0</span>
+              </span>
             </div>
+
+            <div
+              id="theme-grid-container"
+              class="grid grid-cols-2 gap-2 max-h-[350px] overflow-y-auto pr-1 custom-scrollbar"
+            ></div>
           </div>
 
           <div class="space-y-4">
-            <h4 class="text-xs font-bold text-zinc-500 uppercase tracking-widest">Dados do Usuário</h4>
+            <h4
+              class="text-xs font-bold text-zinc-500 uppercase tracking-widest"
+            >
+              Dados do Usuário
+            </h4>
             <div class="p-1 bg-zinc-900 rounded-xl border border-zinc-800 flex">
-                <button onclick="settings.exportData()" class="flex-1 py-3 text-xs font-bold text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors flex items-center justify-center gap-2">
-                    <i data-lucide="download" class="w-3 h-3"></i> BACKUP
-                </button>
-                <div class="w-px bg-zinc-800 my-2"></div>
-                <label class="flex-1 py-3 text-xs font-bold text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer">
-                    <i data-lucide="upload" class="w-3 h-3"></i> RESTAURAR
-                    <input type="file" class="hidden" onchange="settings.importData(this)" />
-                </label>
+              <button
+                onclick="settings.exportData()"
+                class="flex-1 py-3 text-xs font-bold text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors flex items-center justify-center gap-2"
+              >
+                <i data-lucide="download" class="w-3 h-3"></i> BACKUP
+              </button>
+              <div class="w-px bg-zinc-800 my-2"></div>
+              <label
+                class="flex-1 py-3 text-xs font-bold text-zinc-400 hover:text-white hover:bg-zinc-800 rounded-lg transition-colors flex items-center justify-center gap-2 cursor-pointer"
+              >
+                <i data-lucide="upload" class="w-3 h-3"></i> RESTAURAR
+                <input
+                  type="file"
+                  class="hidden"
+                  onchange="settings.importData(this)"
+                />
+              </label>
             </div>
 
             <button
@@ -258,7 +298,7 @@
                 >
               </p>
               <p class="text-zinc-600 text-[9px] font-mono">
-                Pro Gym App v1.5 • Database: IDB
+                Pro Gym App v1.8 • Database: IDB
               </p>
             </div>
           </div>
@@ -266,6 +306,6 @@
       </div>
     </div>
 
-    <script src="js/script.js?v=1.5"></script>
+    <script src="js/script.js?v=1.8"></script>
   </body>
 </html>

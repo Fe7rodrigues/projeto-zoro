@@ -1,4 +1,4 @@
-const CACHE_NAME = 'pro-gym-v1.7-idb'; // NOME ATUALIZADO PARA FORÇAR REFRESH
+const CACHE_NAME = 'pro-gym-v1.8-idb'; // NOME ATUALIZADO PARA FORÇAR REFRESH
 const ASSETS = [
     './',
     './index.html',
@@ -12,7 +12,7 @@ const ASSETS = [
 ];
 
 self.addEventListener('install', (e) => {
-    self.skipWaiting(); 
+    self.skipWaiting();
     e.waitUntil(caches.open(CACHE_NAME).then((cache) => cache.addAll(ASSETS)));
 });
 
@@ -28,7 +28,7 @@ self.addEventListener('activate', (e) => {
             );
         })
     );
-    return self.clients.claim(); 
+    return self.clients.claim();
 });
 
 self.addEventListener('fetch', (e) => {

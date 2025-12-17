@@ -1,7 +1,7 @@
 /**
- * PRO GYM APP V1.7 (ARCH: IDB + WORKER + GHOST SET)
+ * PRO GYM APP V1.8 (ARCH: IDB + WORKER + GAMIFIED THEMES)
  * Copyright (c) 2025 Fernando Rodrigues. Todos os direitos reservados.
- * Descrição: Sistema profissional com Persistência IDB, Timer Background e Ghost Set Analytics.
+ * Descrição: Sistema profissional com Persistência IDB, Timer e Temas Desbloqueáveis por XP.
  */
 
 // --- PERSISTÊNCIA (INDEXEDDB WRAPPER) ---
@@ -43,7 +43,6 @@ class GymDatabase {
                 console.log('Sistema: Migrando dados legados para IndexedDB...');
                 const parsed = JSON.parse(legacyData);
                 await this.set('root', parsed);
-                // localStorage.removeItem(legacyKey); // Backup mantido por segurança
             } catch (err) {
                 console.error('Erro na migração de dados:', err);
             }
@@ -87,14 +86,39 @@ class GymDatabase {
 // Instância Global do Banco de Dados
 const db = new GymDatabase('ProGymDB', 'app_state');
 
-// --- TEMAS PROFISSIONAIS ---
+// --- TEMAS GAMIFICADOS (2 POR NÍVEL) v1.8 ---
 const THEMES = {
-    azul:      { color: '#3b82f6', hover: '#2563eb', glow: 'rgba(59, 130, 246, 0.5)', bgSoft: 'rgba(59, 130, 246, 0.1)' },
-    vermelho:  { color: '#ef4444', hover: '#dc2626', glow: 'rgba(239, 68, 68, 0.5)', bgSoft: 'rgba(239, 68, 68, 0.1)' },
-    verde:     { color: '#10b981', hover: '#059669', glow: 'rgba(16, 185, 129, 0.5)', bgSoft: 'rgba(16, 185, 129, 0.1)' },
-    laranja:   { color: '#f97316', hover: '#ea580c', glow: 'rgba(249, 115, 22, 0.5)', bgSoft: 'rgba(249, 115, 22, 0.1)' },
-    rosa:      { color: '#FD0963', hover: '#D00750', glow: 'rgba(253, 9, 99, 0.6)',  bgSoft: 'rgba(253, 9, 99, 0.15)' },
-    roxo:      { color: '#8A00c4', hover: '#6d009c', glow: 'rgba(138, 0, 196, 0.6)',  bgSoft: 'rgba(138, 0, 196, 0.15)' }
+    // NÍVEL 0: INICIANTE (0 XP)
+    'iniciante_azul': { name: 'Iniciante (Azul)', minXP: 0, color: '#3b82f6', hover: '#2563eb', glow: 'rgba(59, 130, 246, 0.5)', bgSoft: 'rgba(59, 130, 246, 0.1)' },
+    'iniciante_slate': { name: 'Iniciante (Furtivo)', minXP: 0, color: '#64748b', hover: '#475569', glow: 'rgba(100, 116, 139, 0.5)', bgSoft: 'rgba(100, 116, 139, 0.15)' },
+
+    // NÍVEL 1: PRATICANTE (50 XP)
+    'praticante_red': { name: 'Praticante (Red)', minXP: 50, color: '#ef4444', hover: '#dc2626', glow: 'rgba(239, 68, 68, 0.5)', bgSoft: 'rgba(239, 68, 68, 0.1)' },
+    'praticante_vinho': { name: 'Praticante (Vinho)', minXP: 50, color: '#be123c', hover: '#9f1239', glow: 'rgba(190, 18, 60, 0.5)', bgSoft: 'rgba(190, 18, 60, 0.15)' },
+
+    // NÍVEL 2: INTERMEDIÁRIO (200 XP)
+    'inter_verde': { name: 'Intermediário (Eco)', minXP: 200, color: '#10b981', hover: '#059669', glow: 'rgba(16, 185, 129, 0.5)', bgSoft: 'rgba(16, 185, 129, 0.1)' },
+    'inter_teal': { name: 'Intermediário (Mar)', minXP: 200, color: '#14b8a6', hover: '#0d9488', glow: 'rgba(20, 184, 166, 0.5)', bgSoft: 'rgba(20, 184, 166, 0.15)' },
+
+    // NÍVEL 3: AVANÇADO (500 XP)
+    'avancado_laranja': { name: 'Avançado (Fogo)', minXP: 500, color: '#f97316', hover: '#ea580c', glow: 'rgba(249, 115, 22, 0.5)', bgSoft: 'rgba(249, 115, 22, 0.1)' },
+    'avancado_amber': { name: 'Avançado (Âmbar)', minXP: 500, color: '#f59e0b', hover: '#d97706', glow: 'rgba(245, 158, 11, 0.5)', bgSoft: 'rgba(245, 158, 11, 0.15)' },
+
+    // NÍVEL 4: ELITE (1000 XP)
+    'elite_roxo': { name: 'Elite (Real)', minXP: 1000, color: '#8b5cf6', hover: '#7c3aed', glow: 'rgba(139, 92, 246, 0.6)', bgSoft: 'rgba(139, 92, 246, 0.15)' },
+    'elite_indigo': { name: 'Elite (Noite)', minXP: 1000, color: '#6366f1', hover: '#4f46e5', glow: 'rgba(99, 102, 241, 0.6)', bgSoft: 'rgba(99, 102, 241, 0.15)' },
+
+    // NÍVEL 5: PRO (2000 XP)
+    'pro_rosa': { name: 'Pro (Neon)', minXP: 2000, color: '#ec4899', hover: '#db2777', glow: 'rgba(236, 72, 153, 0.6)', bgSoft: 'rgba(236, 72, 153, 0.15)' },
+    'pro_crimson': { name: 'Pro (Intenso)', minXP: 2000, color: '#f43f5e', hover: '#e11d48', glow: 'rgba(244, 63, 94, 0.6)', bgSoft: 'rgba(244, 63, 94, 0.15)' },
+
+    // NÍVEL 6: LENDA (5000 XP)
+    'lenda_cyber': { name: 'Lenda (Tóxico)', minXP: 5000, color: '#ccff00', hover: '#a3cc00', glow: 'rgba(204, 255, 0, 0.6)', bgSoft: 'rgba(204, 255, 0, 0.1)' },
+    'lenda_cyan': { name: 'Lenda (Gelo)', minXP: 5000, color: '#06b6d4', hover: '#0891b2', glow: 'rgba(6, 182, 212, 0.6)', bgSoft: 'rgba(6, 182, 212, 0.15)' },
+
+    // NÍVEL 7: MESTRE (10000 XP)
+    'mestre_ouro': { name: 'Mestre (Ouro)', minXP: 10000, color: '#fbbf24', hover: '#d97706', glow: 'rgba(251, 191, 36, 0.8)', bgSoft: 'rgba(251, 191, 36, 0.2)' },
+    'mestre_platina': { name: 'Mestre (Platina)', minXP: 10000, color: '#cbd5e1', hover: '#94a3b8', glow: 'rgba(203, 213, 225, 0.8)', bgSoft: 'rgba(203, 213, 225, 0.15)' }
 };
 
 // --- SISTEMA DE PROGRESSÃO ---
@@ -231,24 +255,22 @@ const utils = {
         if (diff > 0) return `<span class="delta-tag delta-pos">▲ +${roundedDiff}kg</span>`;
         return `<span class="delta-tag delta-neg">▼ ${roundedDiff}kg</span>`;
     },
-    
-    // NOVO (v1.7): Busca o registro histórico anterior para o Ghost Set
+
     getGhostLog(exId) {
         if (!store.data.loadHistory || !store.data.loadHistory[exId]) return null;
-        
+
         const history = store.data.loadHistory[exId];
         const today = this.getTodayDate();
-        
-        // Filtra para ignorar o dia atual e pega o último (pop)
+
         const prevLog = history.filter(h => h.date !== today).pop();
-        
+
         if (!prevLog) return null;
 
         const date1 = new Date(today);
         const date2 = new Date(prevLog.date);
         const diffTime = Math.abs(date1 - date2);
-        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)); 
-        
+        const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24));
+
         let timeLabel = `${diffDays}d atrás`;
         if (diffDays === 1) timeLabel = 'Ontem';
         if (diffDays > 30) timeLabel = '>30d';
@@ -341,7 +363,7 @@ const store = {
     data: {
         completedSets: {}, weights: {}, rpe: {}, prevWeights: {},
         notes: {}, cardioHistory: {}, workoutHistory: {},
-        settings: { theme: 'azul', soundEnabled: true },
+        settings: { theme: 'iniciante_azul', soundEnabled: true }, // Default atualizado
         xp: 0, visibleVideos: {}, visibleGraphs: {}, loadHistory: {},
         measurements: [], userHeight: null, lastResetWeek: null
     },
@@ -360,7 +382,7 @@ const store = {
             if (!this.data.visibleGraphs) this.data.visibleGraphs = {};
             if (!this.data.loadHistory) this.data.loadHistory = {};
             if (!this.data.measurements) this.data.measurements = [];
-            if (!this.data.settings) this.data.settings = { theme: 'azul', soundEnabled: true };
+            if (!this.data.settings) this.data.settings = { theme: 'iniciante_azul', soundEnabled: true };
             if (typeof this.data.xp !== 'number') this.data.xp = 0;
 
             const currentWeekSignature = utils.getCurrentWeekSignature();
@@ -371,7 +393,12 @@ const store = {
                 this.save();
             }
 
-            themeManager.apply(this.data.settings.theme || 'azul');
+            // Fallback se o tema salvo não existir mais (compatibilidade)
+            if (!THEMES[this.data.settings.theme]) {
+                this.data.settings.theme = 'iniciante_azul';
+            }
+
+            themeManager.apply(this.data.settings.theme);
 
         } catch (e) {
             console.error("Erro crítico ao carregar dados do DB:", e);
@@ -390,7 +417,7 @@ const store = {
 
 const themeManager = {
     apply(key) {
-        const t = THEMES[key] || THEMES['azul'];
+        const t = THEMES[key] || THEMES['iniciante_azul'];
         const r = document.documentElement.style;
         if (t) {
             r.setProperty('--theme-color', t.color);
@@ -400,11 +427,25 @@ const themeManager = {
         }
     },
     setTheme(key) {
+        const theme = THEMES[key];
+        const currentXP = store.data.xp || 0;
+
+        if (theme && currentXP < theme.minXP) {
+            if (navigator.vibrate) navigator.vibrate(200);
+            alert(`🔒 Nível Insuficiente!\n\nVocê precisa atingir o rank correspondente (${theme.minXP} XP) para desbloquear o tema "${theme.name}".`);
+            return;
+        }
+
         store.data.settings.theme = key;
         this.apply(key);
         store.save();
-        if (document.getElementById('main-header') && document.getElementById('main-header').classList.contains('hidden')) {
-            router.renderHome(document.getElementById('main-content'));
+
+        settings.renderThemes();
+
+        if (document.getElementById('main-header') && !document.getElementById('main-header').classList.contains('hidden')) {
+            const currentRoute = router.currentParams ? 'detail' : 'home';
+            if (currentRoute === 'detail') router.renderDetail(document.getElementById('main-content'), router.currentParams);
+            if (currentRoute === 'home') router.renderHome(document.getElementById('main-content'));
         }
     }
 };
@@ -457,13 +498,13 @@ function generateRadarChart(vol) {
         <polygon points="${points}" fill="var(--theme-glow)" stroke="var(--theme-color)" stroke-width="2" fill-opacity="0.4" />
         <circle cx="${centerX}" cy="${centerY}" r="3" fill="var(--theme-color)" />
         ${categories.map((cat, i) => {
-            let val = vol[cat] || 0;
-            const normalized = maxVal === 0 ? 0 : Math.min(val / maxVal, 1);
-            const angle = (Math.PI * 2 * i) / categories.length - Math.PI / 2;
-            const x = centerX + radius * normalized * Math.cos(angle);
-            const y = centerY + radius * normalized * Math.sin(angle);
-            return `<circle cx="${x}" cy="${y}" r="3" fill="#fff" stroke="var(--theme-color)" stroke-width="1"/>`;
-        }).join('')}
+        let val = vol[cat] || 0;
+        const normalized = maxVal === 0 ? 0 : Math.min(val / maxVal, 1);
+        const angle = (Math.PI * 2 * i) / categories.length - Math.PI / 2;
+        const x = centerX + radius * normalized * Math.cos(angle);
+        const y = centerY + radius * normalized * Math.sin(angle);
+        return `<circle cx="${x}" cy="${y}" r="3" fill="#fff" stroke="var(--theme-color)" stroke-width="1"/>`;
+    }).join('')}
     </svg>`;
 }
 
@@ -513,7 +554,7 @@ const BADGES = [
     { id: 'cardio_1', icon: 'heart', title: 'Cardio Start', desc: '1 sessão de cardio.', check: (s) => Object.keys(s.cardioHistory || {}).length >= 1 },
     { id: 'note_1', icon: 'book', title: 'Anotação', desc: '1 nota técnica.', check: (s) => Object.keys(s.notes || {}).length >= 1 },
     { id: 'xp_100', icon: 'bar-chart', title: 'XP 100', desc: '100 XP (séries).', check: (s) => (s.xp || 0) >= 100 },
-    { id: 'theme_user', icon: 'palette', title: 'Estilo', desc: 'Mude o tema.', check: (s) => s.settings.theme !== 'azul' },
+    { id: 'theme_user', icon: 'palette', title: 'Estilo', desc: 'Mude o tema.', check: (s) => s.settings.theme !== 'iniciante_azul' },
     { id: 'sound_user', icon: 'volume-2', title: 'Foco', desc: 'Desative o som.', check: (s) => s.settings.soundEnabled === false },
     { id: 'load_50', icon: 'disc', title: 'Peso Médio', desc: 'Carga de 50kg.', check: (s) => utils.checkMaxLoad(s) >= 50 },
     { id: 'freq_3', icon: 'calendar-check', title: 'Frequência 3x', desc: '3 treinos na semana.', check: (s) => utils.checkWeeklyConsistency(s) >= 3 },
@@ -673,8 +714,8 @@ const timer = {
         } else {
             this.isActive = true;
             if (this.currentTime > 0) {
-                 this.worker.postMessage({ command: 'START', value: this.currentTime });
-                 this.updateBtn(true);
+                this.worker.postMessage({ command: 'START', value: this.currentTime });
+                this.updateBtn(true);
             } else {
                 this.reset();
             }
@@ -731,7 +772,7 @@ const measurementsManager = {
             document.getElementById('meas-thigh').value = last.thigh || '';
         }
     },
-    
+
     closeModal() { document.getElementById('measurements-modal').classList.add('hidden'); },
 
     save() {
@@ -779,9 +820,56 @@ const notesManager = {
 };
 
 const settings = {
-    open() { document.getElementById('settings-modal').classList.remove('hidden'); },
-    close() { document.getElementById('settings-modal').classList.add('hidden'); },
-    
+    open() {
+        this.renderThemes();
+        document.getElementById('settings-modal').classList.remove('hidden');
+    },
+
+    close() {
+        document.getElementById('settings-modal').classList.add('hidden');
+    },
+
+    renderThemes() {
+        const container = document.getElementById('theme-grid-container');
+        const xpDisplay = document.getElementById('settings-xp-display');
+
+        if (xpDisplay) xpDisplay.innerText = store.data.xp || 0;
+        if (!container) return;
+
+        const currentXP = store.data.xp || 0;
+
+        container.innerHTML = Object.entries(THEMES).map(([key, theme]) => {
+            const isLocked = currentXP < theme.minXP;
+            const isSelected = store.data.settings.theme === key;
+
+            if (isLocked) {
+                return `
+                <button onclick="themeManager.setTheme('${key}')" class="relative flex items-center gap-3 p-3 rounded-lg border border-zinc-800 bg-zinc-900/40 cursor-not-allowed overflow-hidden group">
+                    <div class="absolute inset-0 bg-black/60 flex flex-col items-center justify-center backdrop-blur-[1px] z-10">
+                        <i data-lucide="lock" class="w-4 h-4 text-zinc-500 mb-1"></i>
+                    </div>
+                    <div class="w-4 h-4 rounded-full opacity-30" style="background-color: ${theme.color}"></div>
+                    <div class="flex flex-col items-start opacity-40">
+                        <span class="text-[10px] font-bold text-zinc-400 uppercase tracking-wider truncate w-24 text-left">${theme.name.split(' (')[0]}</span>
+                        <span class="text-[9px] font-mono text-zinc-600">Req: ${theme.minXP} XP</span>
+                    </div>
+                </button>`;
+            }
+
+            return `
+            <button onclick="themeManager.setTheme('${key}')" class="relative flex items-center gap-3 p-3 rounded-lg border ${isSelected ? 'border-[var(--theme-color)] bg-[var(--theme-bg-soft)] ring-1 ring-[var(--theme-glow)]' : 'border-zinc-800 bg-zinc-900 hover:border-zinc-600'} transition-all group active:scale-95">
+                <div class="w-4 h-4 rounded-full shadow-[0_0_8px_rgba(0,0,0,0.5)]" style="background-color: ${theme.color}; box-shadow: 0 0 6px ${theme.color}"></div>
+                <div class="flex flex-col items-start">
+                    <span class="text-[11px] font-bold ${isSelected ? 'text-white' : 'text-zinc-300'} group-hover:text-white truncate w-24 text-left">${theme.name}</span>
+                    <span class="text-[8px] font-mono text-[var(--theme-color)] opacity-80">Desbloqueado</span>
+                </div>
+                ${isSelected ? `<div class="absolute right-2 top-1/2 -translate-y-1/2 text-[var(--theme-color)]"><i data-lucide="check-circle-2" class="w-4 h-4"></i></div>` : ''}
+            </button>`;
+        }).join('');
+
+        safeIcons();
+    },
+
     async clearAll() {
         if (confirm('ATENÇÃO: Deseja apagar todo o histórico e começar do zero?')) {
             await db.clear();
@@ -789,7 +877,7 @@ const settings = {
             location.reload();
         }
     },
-    
+
     exportData() {
         const blob = new Blob([JSON.stringify(store.data)], { type: 'application/json' });
         const url = URL.createObjectURL(blob);
@@ -798,7 +886,7 @@ const settings = {
         a.download = `progym_backup_${utils.getTodayDate()}.json`;
         a.click();
     },
-    
+
     importData(i) {
         const f = i.files[0];
         if (!f) return;
@@ -983,12 +1071,12 @@ const router = {
             const delta = utils.getDelta(ex.id) || '';
             const currentRPE = (store.data.rpe && store.data.rpe[ex.id]) || 'RPE';
 
-            // GHOST SET LOGIC (v1.7)
+            // GHOST SET LOGIC
             const ghost = utils.getGhostLog(ex.id);
             const currentWeight = parseFloat(store.data.weights && store.data.weights[ex.id]) || 0;
             const isRecord = ghost && currentWeight > ghost.load;
             const ghostClass = isRecord ? 'ghost-tag beat-record' : 'ghost-tag';
-            const ghostHtml = ghost 
+            const ghostHtml = ghost
                 ? `<div class="${ghostClass}"><i data-lucide="ghost" class="w-3 h-3"></i> <span>${ghost.load}kg (${ghost.label})</span></div>`
                 : `<div class="ghost-tag opacity-50"><span>--</span></div>`;
 
@@ -1384,7 +1472,7 @@ const actions = {
         store.save();
         router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
-    
+
     adjustWeight(exId, delta) {
         const inputEl = document.getElementById(`weight-input-${exId}`);
         let currentVal = parseFloat(store.data.weights[exId]) || 0;
@@ -1398,13 +1486,13 @@ const actions = {
             setTimeout(() => inputEl.style.color = 'white', 300);
         }
     },
-    
+
     setRPE(ex, v) {
         if (!store.data.rpe) store.data.rpe = {};
         store.data.rpe[ex] = v;
         store.save();
     },
-    
+
     cardio() {
         if (!store.data.cardioHistory) store.data.cardioHistory = {};
         const d = utils.getTodayDate();
@@ -1412,21 +1500,21 @@ const actions = {
         store.save();
         router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
-    
+
     toggleVideo(exId) {
         if (!store.data.visibleVideos) store.data.visibleVideos = {};
         store.data.visibleVideos[exId] = !store.data.visibleVideos[exId];
         if (store.data.visibleGraphs[exId]) store.data.visibleGraphs[exId] = false;
         router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
-    
+
     toggleGraph(exId) {
         if (!store.data.visibleGraphs) store.data.visibleGraphs = {};
         store.data.visibleGraphs[exId] = !store.data.visibleGraphs[exId];
         if (store.data.visibleVideos[exId]) store.data.visibleVideos[exId] = false;
         router.renderDetail(document.getElementById('main-content'), router.currentParams);
     },
-    
+
     reset(id) {
         if (!confirm('Reiniciar esta sessão? (Seu XP será mantido)')) return;
         const w = WORKOUT_PLAN.find(x => x.id === id);
@@ -1436,7 +1524,7 @@ const actions = {
             router.renderDetail(document.getElementById('main-content'), router.currentParams);
         }
     },
-    
+
     finish() {
         const btn = document.getElementById('btn-finish-session');
         if (btn) {
