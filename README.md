@@ -6,7 +6,7 @@ Sistema profissional de gestão de treinos e performance (PWA), desenvolvido com
 
 ## 📋 Visão Geral
 
-O **Pro Gym App (v1.8)** redefine a experiência de treino móvel ao combinar uma interface **Clean Dark** livre de distrações com um motor de dados robusto.
+O **Pro Gym App (v1.9)** redefine a experiência de treino móvel ao combinar uma interface **Clean Dark** livre de distrações com um motor de dados robusto.
 
 Diferente de aplicações comuns, esta versão opera com uma arquitetura **Local-First** assíncrona, garantindo que o cronómetro de descanso funcione em _background_ (mesmo com o ecrã desligado) e que anos de histórico sejam carregados instantaneamente sem bloquear a interface.
 
