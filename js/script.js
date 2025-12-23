@@ -142,12 +142,12 @@ const WORKOUT_PLAN = [
             { id: 'a2', name: 'Peck Deck', machine: 'Kikos Pro Station TTMS25', sets: 4, reps: '10-12', rest: 45, youtube: '9GB1fOEmAPI' },
             { id: 'a3', name: 'Supino Inclinado', machine: 'Halteres / Máquina', sets: 4, reps: '8-10', rest: 60, youtube: 'VQauxmUhw-Y' },
             { id: 'a4', name: 'Cross Over', machine: 'Kikos Pro Titanium TTMS20', sets: 4, reps: '12-15', rest: 45, youtube: 'HC0424Xocow' },
-            { id: 'a5', name: 'Supino Reto Articulado', machine: 'Máquina Articulada', sets: 4, reps: '10-12', rest: 60, youtube: 'Va9Pupd08yM' },
-            { id: 'a6', name: 'Abdominal Máquina', machine: 'Kikos Pro Station TTFW60', sets: 4, reps: '15-20', rest: 45, youtube: '0R3qJeNgg8Y' }
+            { id: 'a5', name: 'Abdominal Máquina', machine: 'Kikos Pro Station TTFW60', sets: 4, reps: '15-20', rest: 45, youtube: '0R3qJeNgg8Y' },
+            { id: 'a6', name: 'Supino Reto Articulado', machine: 'Máquina Articulada', sets: 4, reps: '10-12', rest: 60, youtube: 'Va9Pupd08yM' }
         ]
     },
     {
-       id: 'day-b', letter: 'B', title: 'Dorsais & Lombar', focus: 'Foco em Costas',
+        id: 'day-b', letter: 'B', title: 'Dorsais & Lombar', focus: 'Foco em Costas',
         exercises: [
             { id: 'b1', name: 'Puxada Alta', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 60, youtube: 'UO70dS2tTyQ' },
             { id: 'b2', name: 'Remada Baixa', machine: 'Kikos Pro Station', sets: 4, reps: '10-12', rest: 45, youtube: 'MwyrOd_vwB8' },
@@ -156,7 +156,6 @@ const WORKOUT_PLAN = [
             { id: 'b5', name: 'Remada Curvada Máquina', machine: 'Máquina Articulada', sets: 4, reps: '10-12', rest: 60, youtube: 'Mn6_dHO1ysM' },
             { id: 'b6', name: 'Puxada Gráviton', machine: 'Kikos Graviton', sets: 4, reps: '10-12', rest: 45, youtube: 'KM0iEHUJEc4' }
         ]
-
     },
     {
         id: 'day-c', letter: 'C', title: 'Quadríceps & Pant.', focus: 'Foco em Pernas',
@@ -191,7 +190,7 @@ const WORKOUT_PLAN = [
         ]
     },
     {
-    id: 'day-f', letter: 'F', title: 'Posterior & Glúteos', focus: 'Foco em Glúteos',
+        id: 'day-f', letter: 'F', title: 'Posterior & Glúteos', focus: 'Foco em Glúteos',
         exercises: [
             { id: 'f1', name: 'Mesa Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '10-12', rest: 45, youtube: 'sZw0r26ADYA' },
             { id: 'f2', name: 'Cadeira Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '10-12', rest: 45, youtube: 'Y1o8iPiBI7k' },
@@ -1612,8 +1611,36 @@ const actions = {
             btn.classList.add('bg-green-600', 'scale-105');
             safeIcons();
         }
+        
         celebrateCompletion();
         if (navigator.vibrate) navigator.vibrate([100, 50, 100, 50, 200]);
+
+        // --- NOVA LÓGICA DE RESET GLOBAL ---
+        // Verifica se TODOS os exercícios de TODOS os dias foram feitos
+        let allWorkoutsDone = true;
+        
+        // Itera sobre o plano completo (A, B, C, D, E, F)
+        WORKOUT_PLAN.forEach(day => {
+            day.exercises.forEach(ex => {
+                for (let i = 0; i < 4; i++) {
+                    // Se encontrar qualquer série não feita, define como falso
+                    if (!store.data.completedSets || !store.data.completedSets[`${ex.id}-${i}`]) {
+                        allWorkoutsDone = false;
+                    }
+                }
+            });
+        });
+
+        // Se tudo estiver concluído, reseta
+        if (allWorkoutsDone) {
+            setTimeout(() => {
+                alert("🏆 CICLO CONCLUÍDO!\n\nParabéns, você completou todos os treinos (A-F). O progresso das séries será reiniciado para um novo ciclo.");
+                store.data.completedSets = {}; // Limpa todas as marcações
+                store.save(); // Salva o estado limpo no banco
+            }, 1000);
+        }
+        // -----------------------------------
+
         setTimeout(() => { router.navigate('home'); }, 3000);
     }
 };
