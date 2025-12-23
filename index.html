@@ -93,38 +93,99 @@
 
       <main id="main-content"></main>
 
-      <nav id="bottom-nav" class="flex justify-around items-center">
-        <button onclick="router.navigate('tools')" class="nav-btn group">
-          <i data-lucide="calculator" class="icon-nav"></i>
-          <span class="label-nav">UTILIT.</span>
-        </button>
-
-        <button onclick="router.navigate('stats')" class="nav-btn group">
-          <i data-lucide="activity" class="icon-nav"></i>
-          <span class="label-nav">STATS</span>
-        </button>
-
-        <div class="relative -top-6">
+      <nav
+        id="bottom-nav"
+        class="fixed bottom-0 left-0 right-0 z-50 bg-[#09090b]/90 backdrop-blur-xl border-t border-white/5 pb-[env(safe-area-inset-bottom)]"
+      >
+        <div
+          class="relative flex justify-around items-end h-[70px] px-2 w-full max-w-[420px] mx-auto"
+        >
           <button
-            onclick="router.navigate('home')"
-            class="h-14 w-14 rounded-full flex items-center justify-center bg-zinc-900 border-2 border-[var(--theme-color)] shadow-lg active:scale-95 transition-all group"
+            onclick="router.navigate('tools')"
+            class="group relative flex-1 flex flex-col items-center justify-center h-full gap-1 pt-2 transition-all active:scale-95"
           >
+            <div
+              class="absolute top-0 w-8 h-[2px] bg-[var(--theme-color)] opacity-0 group-hover:opacity-100 shadow-[0_0_15px_var(--theme-color)] transition-all duration-300"
+            ></div>
             <i
-              data-lucide="dumbbell"
-              class="w-6 h-6 text-[var(--theme-color)] group-hover:scale-110 transition-transform"
+              data-lucide="layout-grid"
+              class="w-6 h-6 text-zinc-500 group-hover:text-white transition-colors duration-300 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]"
             ></i>
+            <span
+              class="text-[9px] font-bold text-zinc-600 group-hover:text-[var(--theme-color)] tracking-wider uppercase transition-colors"
+              >Tools</span
+            >
+          </button>
+
+          <button
+            onclick="router.navigate('stats')"
+            class="group relative flex-1 flex flex-col items-center justify-center h-full gap-1 pt-2 transition-all active:scale-95"
+          >
+            <div
+              class="absolute top-0 w-8 h-[2px] bg-[var(--theme-color)] opacity-0 group-hover:opacity-100 shadow-[0_0_15px_var(--theme-color)] transition-all duration-300"
+            ></div>
+            <i
+              data-lucide="bar-chart-2"
+              class="w-6 h-6 text-zinc-500 group-hover:text-white transition-colors duration-300 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]"
+            ></i>
+            <span
+              class="text-[9px] font-bold text-zinc-600 group-hover:text-[var(--theme-color)] tracking-wider uppercase transition-colors"
+              >Stats</span
+            >
+          </button>
+
+          <div class="relative -top-6 flex-1 flex justify-center">
+            <button
+              onclick="router.navigate('home')"
+              class="w-16 h-16 rounded-2xl bg-[#09090b] border border-[var(--theme-color)] flex items-center justify-center shadow-[0_0_20px_var(--theme-glow)] active:scale-90 transition-all duration-300 group z-10 hover:-translate-y-1"
+            >
+              <div
+                class="absolute inset-0 bg-[var(--theme-color)] opacity-10 rounded-2xl blur-md group-hover:opacity-20 transition-opacity"
+              ></div>
+              <i
+                data-lucide="dumbbell"
+                class="w-8 h-8 text-[var(--theme-color)] group-hover:text-white transition-all duration-300 group-hover:rotate-[-15deg] drop-shadow-[0_0_5px_var(--theme-color)]"
+              ></i>
+            </button>
+            <div
+              class="absolute bottom-2 w-20 h-10 bg-[#09090b] rounded-t-full -z-10 translate-y-6"
+            ></div>
+          </div>
+
+          <button
+            onclick="router.navigate('achievements')"
+            class="group relative flex-1 flex flex-col items-center justify-center h-full gap-1 pt-2 transition-all active:scale-95"
+          >
+            <div
+              class="absolute top-0 w-8 h-[2px] bg-[var(--theme-color)] opacity-0 group-hover:opacity-100 shadow-[0_0_15px_var(--theme-color)] transition-all duration-300"
+            ></div>
+            <i
+              data-lucide="trophy"
+              class="w-6 h-6 text-zinc-500 group-hover:text-white transition-colors duration-300 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]"
+            ></i>
+            <span
+              class="text-[9px] font-bold text-zinc-600 group-hover:text-[var(--theme-color)] tracking-wider uppercase transition-colors"
+              >Meta</span
+            >
+          </button>
+
+          <button
+            onclick="settings.open()"
+            class="group relative flex-1 flex flex-col items-center justify-center h-full gap-1 pt-2 transition-all active:scale-95"
+          >
+            <div
+              class="absolute top-0 w-8 h-[2px] bg-[var(--theme-color)] opacity-0 group-hover:opacity-100 shadow-[0_0_15px_var(--theme-color)] transition-all duration-300"
+            ></div>
+            <i
+              data-lucide="hexagon"
+              class="w-6 h-6 text-zinc-500 group-hover:text-white transition-colors duration-300 group-hover:rotate-90 group-hover:drop-shadow-[0_0_8px_rgba(255,255,255,0.5)]"
+            ></i>
+            <span
+              class="text-[9px] font-bold text-zinc-600 group-hover:text-[var(--theme-color)] tracking-wider uppercase transition-colors"
+              >Menu</span
+            >
           </button>
         </div>
-
-        <button onclick="router.navigate('achievements')" class="nav-btn group">
-          <i data-lucide="award" class="icon-nav"></i>
-          <span class="label-nav">META</span>
-        </button>
-
-        <button onclick="settings.open()" class="nav-btn group">
-          <i data-lucide="sliders-horizontal" class="icon-nav"></i>
-          <span class="label-nav">CONFIG</span>
-        </button>
       </nav>
 
       <div
