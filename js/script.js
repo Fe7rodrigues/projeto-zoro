@@ -142,20 +142,21 @@ const WORKOUT_PLAN = [
             { id: 'a2', name: 'Peck Deck', machine: 'Kikos Pro Station TTMS25', sets: 4, reps: '10-12', rest: 45, youtube: '9GB1fOEmAPI' },
             { id: 'a3', name: 'Supino Inclinado', machine: 'Halteres / Máquina', sets: 4, reps: '8-10', rest: 60, youtube: 'VQauxmUhw-Y' },
             { id: 'a4', name: 'Cross Over', machine: 'Kikos Pro Titanium TTMS20', sets: 4, reps: '12-15', rest: 45, youtube: 'HC0424Xocow' },
-            { id: 'a5', name: 'Abdominal Máquina', machine: 'Kikos Pro Station TTFW60', sets: 4, reps: '15-20', rest: 45, youtube: '0R3qJeNgg8Y' },
-            { id: 'a6', name: 'Abdômen Infra', machine: 'Paralelas / Solo', sets: 4, reps: '15-20', rest: 45, youtube: 'HJGCQe6whLk' }
+            { id: 'a5', name: 'Supino Reto Articulado', machine: 'Máquina Articulada', sets: 4, reps: '10-12', rest: 60, youtube: 'Va9Pupd08yM' },
+            { id: 'a6', name: 'Abdominal Máquina', machine: 'Kikos Pro Station TTFW60', sets: 4, reps: '15-20', rest: 45, youtube: '0R3qJeNgg8Y' }
         ]
     },
     {
-        id: 'day-b', letter: 'B', title: 'Dorsais & Lombar', focus: 'Foco em Costas',
+       id: 'day-b', letter: 'B', title: 'Dorsais & Lombar', focus: 'Foco em Costas',
         exercises: [
             { id: 'b1', name: 'Puxada Alta', machine: 'Kikos Pro Station', sets: 4, reps: '8-10', rest: 60, youtube: 'UO70dS2tTyQ' },
             { id: 'b2', name: 'Remada Baixa', machine: 'Kikos Pro Station', sets: 4, reps: '10-12', rest: 45, youtube: 'MwyrOd_vwB8' },
             { id: 'b3', name: 'Remada Máq. Articulada', machine: 'Kikos Plate Load', sets: 4, reps: '10-12', rest: 45, youtube: '8_fkWDLmURY' },
             { id: 'b4', name: 'Puxada Art. Invertida', machine: 'Kikos Plate Load', sets: 4, reps: '10-12', rest: 45, youtube: '1vPX7VHR2Tw' },
-            { id: 'b5', name: 'Pulldown', machine: 'Kikos Crossover', sets: 4, reps: '12-15', rest: 45, youtube: 'G4B4YEVRQDg' },
+            { id: 'b5', name: 'Remada Curvada Máquina', machine: 'Máquina Articulada', sets: 4, reps: '10-12', rest: 60, youtube: 'Mn6_dHO1ysM' },
             { id: 'b6', name: 'Puxada Gráviton', machine: 'Kikos Graviton', sets: 4, reps: '10-12', rest: 45, youtube: 'KM0iEHUJEc4' }
         ]
+
     },
     {
         id: 'day-c', letter: 'C', title: 'Quadríceps & Pant.', focus: 'Foco em Pernas',
@@ -190,10 +191,10 @@ const WORKOUT_PLAN = [
         ]
     },
     {
-        id: 'day-f', letter: 'F', title: 'Posterior & Glúteos', focus: 'Foco em Glúteos',
+    id: 'day-f', letter: 'F', title: 'Posterior & Glúteos', focus: 'Foco em Glúteos',
         exercises: [
-            { id: 'f1', name: 'Mesa Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '10-12', rest: 45, youtube: 'Y1o8iPiBI7k' },
-            { id: 'f2', name: 'Cadeira Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '10-12', rest: 45, youtube: 'sZw0r26ADYA' },
+            { id: 'f1', name: 'Mesa Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '10-12', rest: 45, youtube: 'sZw0r26ADYA' },
+            { id: 'f2', name: 'Cadeira Flexora', machine: 'Kikos Pro Station', sets: 4, reps: '10-12', rest: 45, youtube: 'Y1o8iPiBI7k' },
             { id: 'f3', name: 'Cadeira Abdutora', machine: 'Kikos Pro Station', sets: 4, reps: '12-15', rest: 45, youtube: '93LxxfV-x34' },
             { id: 'f4', name: 'Cadeira Adutora', machine: 'Kikos Pro Station', sets: 4, reps: '12-15', rest: 45, youtube: 'CwnbaDmScN0' },
             { id: 'f5', name: 'Agachamento Articulado', machine: 'Kikos Plate Load', sets: 4, reps: '8-10', rest: 90, youtube: '2LFqiG5hWL8' },
